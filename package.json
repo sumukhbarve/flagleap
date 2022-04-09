@@ -1,0 +1,55 @@
+{
+  "name": "flagleap",
+  "version": "0.0.0",
+  "description": "",
+  "source": "src/index-flagleap.ts",
+  "main": "dist/index-flagleap.js",
+  "types": "dist/index-flagleap.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "test": "jest src/",
+    "lint": "ts-standard --fix",
+    "watch": "parcel watch",
+    "build": "tsc",
+    "prepack": "npm run lint && npm run test && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumukhbarve/flagleap.git"
+  },
+  "keywords": [],
+  "author": "Sumukh Barve",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/sumukhbarve/flagleap/issues"
+  },
+  "homepage": "https://github.com/sumukhbarve/flagleap#readme",
+  "devDependencies": {
+    "@parcel/packager-ts": "^2.3.2",
+    "@parcel/transformer-typescript-types": "^2.3.2",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.1",
+    "@types/react": "^17.0.40",
+    "@types/react-dom": "^17.0.13",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "jest": "^27.5.1",
+    "parcel": "^2.3.2",
+    "react-dom": "^17.0.2",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1",
+    "ts-jest": "^27.1.3",
+    "ts-node-dev": "^1.1.8",
+    "ts-standard": "^11.0.0",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "express": "^4.17.3",
+    "react": "^17.0.2",
+    "sequelize": "^6.17.0",
+    "zod": "^3.14.1"
+  }
+}
