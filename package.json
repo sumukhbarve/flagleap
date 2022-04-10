@@ -3,8 +3,8 @@
   "version": "0.0.1-dev",
   "description": "",
   "source": "src/index-flagleap.ts",
-  "main": "dist/tsc/index-flagleap.js",
-  "types": "dist/tsc/index-flagleap.d.ts",
+  "main": "dist/index-flagleap.js",
+  "types": "dist/index-flagleap.d.ts",
   "files": [
     "dist/"
   ],
@@ -12,13 +12,13 @@
     "test": "jest src/",
     "lint": "ts-standard --fix",
     "watch-server": "ts-node-dev src/backend/server.ts",
-    "build-server": "tsc --outDir dist/tsc",
-    "watch-client": "cd src/frontend && parcel watch client.html --dist-dir ../../dist/parcel",
-    "build-client": "cd src/frontend && parcel build client.html --dist-dir ../../dist/parcel",
+    "build-server": "tsc",
+    "watch-client": "cd src/frontend && parcel watch client.html --dist-dir ../../dist/frontend",
+    "build-client": "cd src/frontend && parcel build client.html --dist-dir ../../dist/frontend",
     "watch": "echo 'Please run watch-client or watch-server'",
-    "build": "rm -rf dist && npm run build-client && npm run build-server",
+    "build": "rm -rf dist && npm run build-server && rm -rf dist/frontend && npm run build-client",
     "prepack": "npm run lint && npm run test && npm run build",
-    "start": "node dist/tsc/backend/server.js"
+    "start": "node dist/backend/server.js"
   },
   "repository": {
     "type": "git",
