@@ -35,13 +35,23 @@ const stringifyQs = function (routeInfo: RouteInfoType): string {
 
 // Handle initial data flow from URL --> App with proper initialization:
 const obQs = lookduck.observable(unprefixQmark(windowLocation.search))
+let qsPopInProgress: boolean = false
 // Handle data flow from App --> URL as user interacts with the App:
 obQs.subscribe(function () {
-  windowHistory.pushState(null, '', prefixQmark(obQs.get()))
+  // console.log(`setting ${obQs.get()} @ ${Date.now()}`)
+  if (!qsPopInProgress) {
+    // console.log(`pushing ${obQs.get()} @ ${Date.now()}`)
+    windowHistory.pushState(null, '', prefixQmark(obQs.get()))
+  } else {
+    // console.log(`skip-pushing ${obQs.get()} @ ${Date.now()}`)
+  }
 })
 // Handle data flow from URL --> App as the users navigates back/forward:
 windowAddEventListener('popstate', function () {
+  // console.log(`popping ${windowLocation.search} @ ${Date.now()}`)
+  qsPopInProgress = true
   obQs.set(unprefixQmark(windowLocation.search))
+  qsPopInProgress = false
 })
 
 const coRouteInfo = lookduck.computed(function (): RouteInfoType {
