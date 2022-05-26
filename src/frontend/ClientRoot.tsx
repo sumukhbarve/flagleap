@@ -1,16 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { RouteInfo } from './roqsduck-preview/qs-base-tracker'
-import { hrefAndOnClick, makeUseRouteInfo } from './roqsduck-preview/qs-react-integ'
 // import { coRouteInfo, Link } from './lookableQs'
-import { lookduck } from 'monoduck'
+import { roqsduck, RouteInfo } from 'monoduck'
 
-const Link: React.FC<{to: RouteInfo}> = ({ to, children }) => {
-  return <a {...hrefAndOnClick(to)}>{children}</a>
+const { useRouteInfo, Link: RoqsLink } = roqsduck.injectReact(React)
+
+const Link: React.FC<{to: RouteInfo}> = function ({ to, children }) {
+  return (
+    <RoqsLink to={to}>
+      <span style={{ color: 'navy', borderBottom: '2px solid blue' }}>
+        {children}
+      </span>
+    </RoqsLink>
+  )
 }
-
-const useLookable = lookduck.makeUseLookable(React.useState, React.useEffect)
-const useRouteInfo = makeUseRouteInfo(useLookable)
 
 const RouteAAA: React.VFC = function () {
   return <h2>I am route AAA</h2>
