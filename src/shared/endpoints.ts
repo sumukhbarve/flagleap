@@ -1,52 +1,46 @@
 import { z } from 'zod'
 import { tapiduck } from 'monoduck'
-import { zSettings, zEndUser, zEndUserExtras, zFlag, zRule } from './z-models'
+import {
+  zFlag, zRule, zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
+  // zDevUser, zDevUserWoHpass, zOperatorEnum
+} from './z-models'
 
-// Prelims:
-const zOk = z.object({ ok: z.literal(true) })
-const zKVPairStrStr = z.object({ key: z.string(), value: z.string() })
-const zRecordStrStr = z.record(z.string())
+// Prelims: ////////////////////////////////////////////////////////////////////
 
+const include = true
+
+const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
 const zExapiToken = z.object({ api_key: z.string() })
 
+const zEmailAndPassword = z.object({
+  email: z.string(),
+  password: z.string()
+})
+
 const ping = tapiduck.endpoint({
-  path: '/inapi/ping',
+  path: '/coapi/ping',
   zReq: z.object({ ping: z.string() }),
   zRes: z.object({ pong: z.string() })
 })
 
-// Internal - Settings: //////////////////////////////////////////////////////////////
-const zSetupReq = z.object({
-  admin_username: z.string(),
-  admin_password: z.string(),
-  mode_lines: z.string()
-})
+/// ////////////////////////////////////////////////////////////////////////////
+// Internal API: ///////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////
+
+// Auth (internal):
 const setup = tapiduck.endpoint({
   path: '/inapi/setup',
-  zReq: zSetupReq,
-  zRes: zOk
+  zReq: zEmailAndPassword,
+  zRes: zInapiToken
 })
 const login = tapiduck.endpoint({
   path: '/inapi/login',
-  zReq: zSetupReq.pick({ admin_username: true, admin_password: true }),
+  zReq: zEmailAndPassword,
   zRes: zInapiToken
 })
-const updateSettings = tapiduck.endpoint({
-  path: '/inapi/updateModes',
-  zReq: zInapiToken.merge(zSettings.pick({
-    admin_username: true,
-    mode_lines: true
-  }).partial()),
-  zRes: zOk
-})
-const regenerateApiKey = tapiduck.endpoint({
-  path: '/inapi/regenerateApiKey',
-  zReq: zInapiToken,
-  zRes: z.object({ api_key_clear: z.string() })
-})
 
-// Internal - Flags: /////////////////////////////////////////////////////////////
+// Flags (internal):
 const createFlag = tapiduck.endpoint({
   path: '/inapi/createFlag',
   zReq: zInapiToken.extend({ flag_key: z.string() }),
@@ -61,24 +55,28 @@ const updateFlag = tapiduck.endpoint({
   path: '/inapi/updateFlag',
   zReq: zInapiToken.extend({
     flag: zFlag.pick({
-      id: true, default_value: true, enabled: true, description: true
+      id: include,
+      live_enabled: include,
+      test_enabled: include,
+      description: include,
+      archived: include
     })
   }),
   zRes: zFlag
 })
-const archiveFlag = tapiduck.endpoint({
-  path: '/inapi/archiveFlag',
+const deleteFlag = tapiduck.endpoint({
+  path: '/inapi/deleteFlag',
   zReq: zInapiToken.extend({ flag_id: z.string() }),
-  zRes: zFlag
+  zRes: zId
 })
 
-// Internal - Rules: ///////////////////////////////////////////////////////////
+// Rules (internal):
 const createRule = tapiduck.endpoint({
   path: '/inapi/createRule',
   zReq: zInapiToken.extend({ flag_id: z.string() }),
   zRes: zRule
 })
-const getRulesForFlag = tapiduck.endpoint({
+const getFlagRules = tapiduck.endpoint({
   path: '/inapi/getFlagRules',
   zReq: zInapiToken.extend({ flag_id: z.string() }),
   zRes: z.array(zRule)
@@ -87,76 +85,71 @@ const updateRule = tapiduck.endpoint({
   path: '/inapi/updateRule',
   zReq: zInapiToken.extend({
     rule: zRule.pick({
-      id: true,
-      enabled: true,
-      rank: true,
-      value: true,
-      // user_key related:
-      user_key_matcher: true,
-      user_key_negate: true,
-      user_key_rhs: true,
-      //  group_key related:
-      group_key_matcher: true,
-      group_key_negate: true,
-      group_key_rhs: true
+      id: include,
+      live_exists: include,
+      test_exists: include,
+      enabled: include,
+      rank: include,
+      lhs_operand_key: include,
+      operator: include,
+      rhs_operand_value: include,
+      negated: include,
+      result_value: include
     })
   }),
   zRes: zRule
 })
-const archiveRule = tapiduck.endpoint({
-  path: '/inapi/archiveRule',
+const deleteRule = tapiduck.endpoint({
+  path: '/inapi/deleteRule',
   zReq: zInapiToken.extend({ rule_id: z.string() }),
-  zRes: zRule
+  zRes: zId
 })
 
-// External - End Users: ///////////////////////////////////////////////////////
-const exapiIdentifyEndUser = tapiduck.endpoint({
-  path: '/exapi/identifyEndUser',
-  zReq: zExapiToken
-    .merge(zEndUser.pick({ user_key: true }))
-    .merge(zEndUserExtras.partial()),
-  zRes: zKVPairStrStr
-})
+/// ////////////////////////////////////////////////////////////////////////////
+// External API: ///////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////
 
-// External - Flags: ///////////////////////////////////////////////////////////
 const exapiReadFlag = tapiduck.endpoint({
   path: '/exapi/readFlag',
   zReq: zExapiToken.extend({
     flag_key: z.string(),
-    user_key: z.string(),
-    mode: z.string()
+    mode: zModeEnum,
+    traits: zTraits
+
   }),
-  zRes: zKVPairStrStr
+  zRes: zFlagReadout
 })
 const exapiReadFlags = tapiduck.endpoint({
   path: '/exapi/readFlags',
   zReq: zExapiToken.extend({
     flag_keys: z.array(z.string()).optional(),
-    user_key: z.string(),
-    mode: z.string()
+    mode: z.string(),
+    traits: zTraits
   }),
-  zRes: zRecordStrStr
+  zRes: zFlagReadoutMap
 })
 
 export const api = {
-  ping,
-  // internal - settings etc:
-  setup,
-  login,
-  updateSettings,
-  regenerateApiKey,
-  // internal - flags:
-  createFlag,
-  getFlags,
-  updateFlag,
-  archiveFlag,
-  // internal - rules:
-  createRule,
-  getRulesForFlag,
-  updateRule,
-  archiveRule,
-  // external:
-  exapiIdentifyEndUser,
-  exapiReadFlag,
-  exapiReadFlags
+  common: {
+    ping
+  },
+  internal: {
+    // auth:
+    setup,
+    login,
+    // flags:
+    createFlag,
+    getFlags,
+    updateFlag,
+    deleteFlag,
+    // rules:
+    createRule,
+    getFlagRules,
+    updateRule,
+    deleteRule
+  },
+  external: {
+    exapiReadFlag,
+    exapiReadFlags
+  }
 }

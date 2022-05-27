@@ -8,7 +8,7 @@ const app = express().use(cors(), express.json())
 app.use(express.static(distFrontendDir))
 app.get('/', (_req, res) => res.redirect('/client.html'))
 
-tapiduck.route(app, api.ping, async function (reqdata) {
+tapiduck.route(app, api.common.ping, async function (reqdata) {
   return { pong: reqdata.ping }
 })
 

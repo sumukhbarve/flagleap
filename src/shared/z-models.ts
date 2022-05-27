@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+// Prelims: ////////////////////////////////////////////////////////////////////
+
 const zBoolish = z.number() // Using numbers (not bools) for SQLite compat
 
 const zBase = z.object({
@@ -8,60 +10,74 @@ const zBase = z.object({
   updated_at: z.number()
 })
 
-const zSettings = zBase.extend({
-  admin_username: z.string(),
-  admin_pw_hash: z.string(),
-  mode_lines: z.string(),
-  api_key_hash: z.string()
-})
-type ZSettings = z.infer<typeof zSettings>
+// DB-bound Models: ////////////////////////////////////////////////////////////
 
-const zEndUserExtras = z.object({
-  group_key: z.string(),
-  first_name: z.string(),
-  last_name: z.string(),
+const zDevUser = zBase.extend({
   email: z.string(),
-  phone: z.string()
+  hpass: z.string(),
+  name: z.string()
 })
-const zEndUser = zBase.extend({
-  user_key: z.string()
-}).merge(zEndUserExtras)
-type ZEndUser = z.infer<typeof zEndUser>
+type ZDevUser = z.infer<typeof zDevUser>
+
+const zDevUserWoHpass = zDevUser.omit({
+  hpass: true
+})
+type ZDevUserWoHpass = z.infer<typeof zDevUserWoHpass>
 
 const zFlag = zBase.extend({
-  flag_key: z.string(),
-  default_value: z.string(),
-  enabled: zBoolish,
+  key: z.string(),
+  live_enabled: zBoolish,
+  test_enabled: zBoolish,
   description: z.string(),
   archived: zBoolish
 })
 type ZFlag = z.infer<typeof zFlag>
 
-const zNotlessMatcherEnum = z.enum([
-  '$none', '$eq', '$gt', '$gte', '$lte', '$lt',
-  '$in', '$startswith', '$endswith', '$contains'
+const zOperatorEnum = z.enum([
+  '$eq', '$gt', '$gte', '$lte', '$lt', '$in',
+  '$startswith', '$endswith', '$contains', '$divisibleby'
 ])
-type ZNotlessMatcherEnum = z.infer<typeof zNotlessMatcherEnum>
+type ZOperatorEnum = z.infer<typeof zOperatorEnum>
 
 const zRule = zBase.extend({
   flag_id: z.string(),
+  live_exists: zBoolish,
+  test_exists: zBoolish,
   enabled: zBoolish,
   rank: z.number(),
-  value: z.string(),
-  // mode rule:
-  mode: z.string(),
-  // user_key related:
-  user_key_matcher: zNotlessMatcherEnum,
-  user_key_negate: zBoolish,
-  user_key_rhs: z.string(),
-  // group_key related:
-  group_key_matcher: zNotlessMatcherEnum,
-  group_key_negate: zBoolish,
-  group_key_rhs: z.string()
+  lhs_operand_key: z.string(),
+  operator: zOperatorEnum,
+  rhs_operand_value: z.string(),
+  negated: zBoolish,
+  result_value: z.string()
 })
 type ZRule = z.infer<typeof zRule>
 
-export type { ZSettings, ZEndUser, ZFlag, ZNotlessMatcherEnum, ZRule }
+// Other API-specific Models: //////////////////////////////////////////////////
+
+const zFlagReadout = z.object({
+  key: z.string(),
+  enabled: z.boolean(),
+  value: z.string()
+})
+type ZFlagReadout = z.infer<typeof zFlagReadout>
+
+const zFlagReadoutMap = z.record(zFlagReadout)
+type ZFlagReadoutMap = z.infer<typeof zFlagReadoutMap>
+
+const zModeEnum = z.enum(['live', 'test'])
+type ZModeEnum = z.infer<typeof zModeEnum>
+
+const zTraits = z.record(z.union([z.string(), z.number(), z.boolean()]))
+type ZTraits = z.infer<typeof zTraits>
+
+// Export: /////////////////////////////////////////////////////////////////////
+
+export type {
+  ZDevUser, ZDevUserWoHpass, ZFlag, ZOperatorEnum, ZRule,
+  ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
+}
 export {
-  zSettings, zEndUserExtras, zEndUser, zFlag, zNotlessMatcherEnum, zRule
+  zDevUser, zDevUserWoHpass, zFlag, zOperatorEnum, zRule,
+  zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
 }
