@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { tapiduck } from 'monoduck'
 import {
-  zFlag, zRule, zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
-  // zMember, zMemberWoHpass, zOperatorEnum
+  zMemberWoHpass, zFlag, zRule, zFlagReadout,
+  zFlagReadoutMap, zModeEnum, zTraits // zMember, zMemberWoHpass, zOperatorEnum
 } from './z-models'
 
 // Prelims: ////////////////////////////////////////////////////////////////////
@@ -12,6 +12,8 @@ const include = true
 const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
 const zExapiToken = z.object({ api_key: z.string() })
+const zAuthSuccess = zInapiToken.extend({ member: zMemberWoHpass })
+type ZAuthSuccess = z.infer<typeof zAuthSuccess>
 
 const ping = tapiduck.endpoint({
   path: '/coapi/ping',
@@ -32,7 +34,7 @@ const setup = tapiduck.endpoint({
     email: z.string(),
     password: z.string()
   }),
-  zRes: zInapiToken
+  zRes: zAuthSuccess
 })
 const login = tapiduck.endpoint({
   path: '/inapi/login',
@@ -40,7 +42,7 @@ const login = tapiduck.endpoint({
     email: z.string(),
     password: z.string()
   }),
-  zRes: zInapiToken
+  zRes: zAuthSuccess
 })
 
 // Flags (internal):
@@ -132,7 +134,7 @@ const exapiReadFlags = tapiduck.endpoint({
   zRes: zFlagReadoutMap
 })
 
-export const api = {
+const api = {
   common: {
     ping
   },
@@ -156,3 +158,6 @@ export const api = {
     exapiReadFlags
   }
 }
+
+export type { ZAuthSuccess }
+export { api }
