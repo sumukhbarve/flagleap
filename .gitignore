@@ -1,4 +1,5 @@
 .DS_Store
+local-sqlite.db
 .parcel-cache/
 node_modules/
 dist/

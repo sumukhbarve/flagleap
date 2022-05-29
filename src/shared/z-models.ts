@@ -11,15 +11,23 @@ const zBase = z.object({
   creator_id: z.string(),
   updater_id: z.string()
 })
+type ZBase = z.infer<typeof zBase>
+const defaultBaseRow: ZBase = {
+  id: '', created_at: 0, updated_at: 0, creator_id: '', updater_id: ''
+}
 
 // DB-bound Models: ////////////////////////////////////////////////////////////
 
 const zMember = zBase.extend({
+  fname: z.string(),
+  lname: z.string(),
   email: z.string(),
-  hpass: z.string(),
-  name: z.string()
+  hpass: z.string()
 })
 type ZMember = z.infer<typeof zMember>
+const defaultMemberRow: ZMember = {
+  ...defaultBaseRow, fname: '', lname: '', email: '', hpass: ''
+}
 
 const zMemberWoHpass = zMember.omit({
   hpass: true
@@ -34,6 +42,14 @@ const zFlag = zBase.extend({
   archived: zBoolish
 })
 type ZFlag = z.infer<typeof zFlag>
+const defaultFlagRow: ZFlag = {
+  ...defaultBaseRow,
+  key: '',
+  live_enabled: 0,
+  test_enabled: 0,
+  description: '',
+  archived: 0
+}
 
 const zOperatorEnum = z.enum([
   '$eq', '$gt', '$gte', '$lte', '$lt', '$in',
@@ -54,6 +70,19 @@ const zRule = zBase.extend({
   result_value: z.string()
 })
 type ZRule = z.infer<typeof zRule>
+const defaultRuleRow: ZRule = {
+  ...defaultBaseRow,
+  flag_id: '',
+  live_exists: 0,
+  test_exists: 0,
+  enabled: 0,
+  rank: 0,
+  lhs_operand_key: '',
+  operator: '$eq',
+  rhs_operand_value: '',
+  negated: 0,
+  result_value: ''
+}
 
 // Other API-specific Models: //////////////////////////////////////////////////
 
@@ -80,6 +109,7 @@ export type {
   ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
 }
 export {
-  zMember, zMemberWoHpass, zFlag, zOperatorEnum, zRule,
-  zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
+  zMember, defaultMemberRow, zMemberWoHpass, zFlag, defaultFlagRow,
+  zOperatorEnum, zRule, defaultRuleRow, zFlagReadout, zFlagReadoutMap,
+  zModeEnum, zTraits
 }
