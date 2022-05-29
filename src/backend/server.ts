@@ -1,6 +1,7 @@
 // api-base.ts defines empty app, then controllers add routes.
-import { app } from './api-routes/api-base'
-import './api-routes/misc-api'
+import { app } from './controllers/api-base'
+import './controllers/misc-api'
+import './controllers/member-api'
 
 const PORT = 3000
 app.listen(PORT, () => {

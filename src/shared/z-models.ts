@@ -7,22 +7,24 @@ const zBoolish = z.number() // Using numbers (not bools) for SQLite compat
 const zBase = z.object({
   id: z.string(),
   created_at: z.number(),
-  updated_at: z.number()
+  updated_at: z.number(),
+  creator_id: z.string(),
+  updater_id: z.string()
 })
 
 // DB-bound Models: ////////////////////////////////////////////////////////////
 
-const zDevUser = zBase.extend({
+const zMember = zBase.extend({
   email: z.string(),
   hpass: z.string(),
   name: z.string()
 })
-type ZDevUser = z.infer<typeof zDevUser>
+type ZMember = z.infer<typeof zMember>
 
-const zDevUserWoHpass = zDevUser.omit({
+const zMemberWoHpass = zMember.omit({
   hpass: true
 })
-type ZDevUserWoHpass = z.infer<typeof zDevUserWoHpass>
+type ZMemberWoHpass = z.infer<typeof zMemberWoHpass>
 
 const zFlag = zBase.extend({
   key: z.string(),
@@ -74,10 +76,10 @@ type ZTraits = z.infer<typeof zTraits>
 // Export: /////////////////////////////////////////////////////////////////////
 
 export type {
-  ZDevUser, ZDevUserWoHpass, ZFlag, ZOperatorEnum, ZRule,
+  ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZRule,
   ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
 }
 export {
-  zDevUser, zDevUserWoHpass, zFlag, zOperatorEnum, zRule,
+  zMember, zMemberWoHpass, zFlag, zOperatorEnum, zRule,
   zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
 }

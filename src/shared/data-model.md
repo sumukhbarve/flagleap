@@ -1,15 +1,14 @@
 # FlagLeap - Simplified Data Model
-Last updated: 27 May 2022
 
-### devuser
+### member
 - id: PK
+- fname: string
+- lname: string
 - email: string
 - hpass: string // pw hash
-- name: string // full name
 
 ### flag
 - id: PK
-- key: string, unique
 - live_enabled: boolean/tinyint // in live mode, is flag enabled?
 - test_enabled: boolean/tinyint // in test mode, is flag enabled?
 - description: string

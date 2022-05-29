@@ -40,6 +40,7 @@ const RouteNotFound: React.VFC = function () {
 const ClientRoot: React.VFC = function () {
   const routeInfo = useRouteInfo()
   const routeEl = routeMap[routeInfo.id] ?? <RouteNotFound />
+  const [val, setVal] = React.useState('')
   return (
     <div className='clientRoot'>
       <h1>FlagLeap</h1>
@@ -52,6 +53,10 @@ const ClientRoot: React.VFC = function () {
       </nav>
       <hr />
       {routeEl}
+      <hr />
+      <textarea value={val} onChange={evt => setVal(evt.currentTarget.value)} />
+      <pre>{val}</pre>
+      <button onClick={() => roqsduck.setRouteInfo(JSON.parse(val))}>Set QS</button>
     </div>
   )
 }

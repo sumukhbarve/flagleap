@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { tapiduck } from 'monoduck'
 import {
   zFlag, zRule, zFlagReadout, zFlagReadoutMap, zModeEnum, zTraits
-  // zDevUser, zDevUserWoHpass, zOperatorEnum
+  // zMember, zMemberWoHpass, zOperatorEnum
 } from './z-models'
 
 // Prelims: ////////////////////////////////////////////////////////////////////
@@ -12,11 +12,6 @@ const include = true
 const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
 const zExapiToken = z.object({ api_key: z.string() })
-
-const zEmailAndPassword = z.object({
-  email: z.string(),
-  password: z.string()
-})
 
 const ping = tapiduck.endpoint({
   path: '/coapi/ping',
@@ -31,19 +26,27 @@ const ping = tapiduck.endpoint({
 // Auth (internal):
 const setup = tapiduck.endpoint({
   path: '/inapi/setup',
-  zReq: zEmailAndPassword,
+  zReq: z.object({
+    fname: z.string(),
+    lname: z.string(),
+    email: z.string(),
+    password: z.string()
+  }),
   zRes: zInapiToken
 })
 const login = tapiduck.endpoint({
   path: '/inapi/login',
-  zReq: zEmailAndPassword,
+  zReq: z.object({
+    email: z.string(),
+    password: z.string()
+  }),
   zRes: zInapiToken
 })
 
 // Flags (internal):
 const createFlag = tapiduck.endpoint({
   path: '/inapi/createFlag',
-  zReq: zInapiToken.extend({ flag_key: z.string() }),
+  zReq: zInapiToken.extend({ flag_id: z.string() }),
   zRes: zFlag
 })
 const getFlags = tapiduck.endpoint({
@@ -112,7 +115,7 @@ const deleteRule = tapiduck.endpoint({
 const exapiReadFlag = tapiduck.endpoint({
   path: '/exapi/readFlag',
   zReq: zExapiToken.extend({
-    flag_key: z.string(),
+    flag_id: z.string(),
     mode: zModeEnum,
     traits: zTraits
 
@@ -122,7 +125,7 @@ const exapiReadFlag = tapiduck.endpoint({
 const exapiReadFlags = tapiduck.endpoint({
   path: '/exapi/readFlags',
   zReq: zExapiToken.extend({
-    flag_keys: z.array(z.string()).optional(),
+    flag_ids: z.array(z.string()).optional(),
     mode: z.string(),
     traits: zTraits
   }),
