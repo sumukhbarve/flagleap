@@ -35,7 +35,6 @@ const zMemberWoHpass = zMember.omit({
 type ZMemberWoHpass = z.infer<typeof zMemberWoHpass>
 
 const zFlag = zBase.extend({
-  key: z.string(),
   live_enabled: zBoolish,
   test_enabled: zBoolish,
   description: z.string(),
@@ -44,7 +43,6 @@ const zFlag = zBase.extend({
 type ZFlag = z.infer<typeof zFlag>
 const defaultFlagRow: ZFlag = {
   ...defaultBaseRow,
-  key: '',
   live_enabled: 0,
   test_enabled: 0,
   description: '',
@@ -87,7 +85,7 @@ const defaultRuleRow: ZRule = {
 // Other API-specific Models: //////////////////////////////////////////////////
 
 const zFlagReadout = z.object({
-  key: z.string(),
+  flag_id: z.string(),
   enabled: z.boolean(),
   value: z.string()
 })

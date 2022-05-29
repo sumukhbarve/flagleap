@@ -1,10 +1,14 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
-// import { coRouteInfo, Link } from './lookableQs'
-import { roqsduck, RouteInfo } from 'monoduck'
+import { RouteInfo } from 'monoduck'
+import * as store from './store'
+import { SetupRoute } from './components/SetupRoute'
+import { LoginRoute } from './components/LoginRoute'
+import { FlagListerRoute } from './components/FlagListerRoute'
 
-const { useRouteInfo, Link: RoqsLink } = roqsduck.injectReact(React)
-
+const RoqsLink = store.RoqsLink
 const Link: React.FC<{to: RouteInfo}> = function ({ to, children }) {
   return (
     <RoqsLink to={to}>
@@ -16,7 +20,16 @@ const Link: React.FC<{to: RouteInfo}> = function ({ to, children }) {
 }
 
 const RouteAAA: React.VFC = function () {
-  return <h2>I am route AAA</h2>
+  const [val, setVal] = React.useState('')
+  return (
+    <form onSubmit={e => { e.preventDefault(); alert(val) }}>
+      <h4>Simple Form</h4>
+      <input value={val} onChange={e => setVal(e.target.value)} required /> {' '}
+      <button>Submit</button>
+      <br />
+      {val}
+    </form>
+  )
 }
 
 const RouteBBB: React.VFC = function () {
@@ -28,6 +41,9 @@ const RouteCCC: React.VFC = function () {
 }
 
 const routeMap: Record<string, React.ReactElement> = {
+  setup: <SetupRoute />,
+  login: <LoginRoute />,
+  flagLister: <FlagListerRoute />,
   aaa: <RouteAAA />,
   bbb: <RouteBBB />,
   ccc: <RouteCCC />
@@ -38,25 +54,22 @@ const RouteNotFound: React.VFC = function () {
 }
 
 const ClientRoot: React.VFC = function () {
-  const routeInfo = useRouteInfo()
+  const routeInfo = store.useRouteInfo()
   const routeEl = routeMap[routeInfo.id] ?? <RouteNotFound />
-  const [val, setVal] = React.useState('')
   return (
-    <div className='clientRoot'>
+    <div className='container'>
       <h1>FlagLeap</h1>
-      <p>Mike check. Routing checking:</p>
       <nav>
         <Link to={{ id: 'aaa' }}>aaa</Link> |{' '}
         <Link to={{ id: 'bbb' }}>bbb</Link> |{' '}
         <Link to={{ id: 'ccc' }}>ccc</Link> |{' '}
-        <Link to={{ id: 'ddd' }}>ddd</Link>
+        <Link to={{ id: 'ddd' }}>ddd</Link> |{' '}
+        <Link to={{ id: 'setup' }}>setup</Link> |{' '}
+        <Link to={{ id: 'login' }}>login</Link> |{' '}
+        <Link to={{ id: 'flagLister' }}>flags</Link> |{' '}
       </nav>
       <hr />
       {routeEl}
-      <hr />
-      <textarea value={val} onChange={evt => setVal(evt.currentTarget.value)} />
-      <pre>{val}</pre>
-      <button onClick={() => roqsduck.setRouteInfo(JSON.parse(val))}>Set QS</button>
     </div>
   )
 }
