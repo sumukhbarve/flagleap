@@ -55,12 +55,23 @@ const LoadingIndicator: React.VFC = function () {
   return _.bool(loadingMsg) ? <h3>{loadingMsg}</h3> : null
 }
 
+const ModeToggle: React.VFC = function () {
+  const mode = store.use(store.mode)
+  const otherMode = mode === 'live' ? 'test' : 'live'
+  return (
+    <span>
+      In {mode.toUpperCase()} mode.{' '}
+      <a href='#' onClick={() => store.mode.set(otherMode)}>Toggle</a>
+    </span>
+  )
+}
+
 const ClientRoot: React.VFC = function () {
   const routeInfo = store.useRouteInfo()
   return (
     <div className='container'>
       <LoadingIndicator />
-      <h1>FlagLeap</h1>
+      <h2>FlagLeap</h2>
       <nav>
         <Link to={{ id: 'aaa' }}>aaa</Link> |{' '}
         <Link to={{ id: 'bbb' }}>bbb</Link> |{' '}
@@ -69,6 +80,7 @@ const ClientRoot: React.VFC = function () {
         <Link to={{ id: 'setup' }}>setup</Link> |{' '}
         <Link to={{ id: 'login' }}>login</Link> |{' '}
         <Link to={{ id: 'flagLister' }}>flags</Link> |{' '}
+        <ModeToggle />
       </nav>
       <pre>nav routeInfo: {JSON.stringify(routeInfo)}</pre>
       <hr />

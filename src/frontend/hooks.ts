@@ -3,21 +3,22 @@ import type { Lookable } from 'monoduck'
 import { _, roqsduck } from 'monoduck'
 import * as store from './store'
 
-// A 'clean' effect is one that doesn't need any cleanup.
-const useCleanAsyncEffect = function (
-  fn: () => unknown, deps: unknown[]
+const useAsyncEffect = function (
+  effect?: () => unknown, cleanup?: () => unknown, deps?: unknown[]
 ): void {
-  React.useEffect(() => { fn() }, deps)
+  React.useEffect(function () {
+    effect?.()
+    return function () {
+      cleanup?.()
+    }
+  }, deps)
 }
 
 const useOnMount = function (fn: () => unknown): void {
-  useCleanAsyncEffect(fn, [])
+  useAsyncEffect(fn, undefined, [])
 }
 const useOnUnmount = function (fn: () => unknown): void {
-  React.useEffect(function () {
-    const cleanup = (): void => { fn() }
-    return cleanup
-  }, [])
+  useAsyncEffect(undefined, fn, [])
 }
 
 const makeUseMountExpectsElseRedir = function<T> (
@@ -44,7 +45,6 @@ const useMountExpectsLoggedOut = makeUseMountExpectsElseRedir(
 )
 
 export {
-  useCleanAsyncEffect,
   useOnMount,
   useOnUnmount,
   useMountExpectsLoggedIn,
