@@ -5,6 +5,7 @@ import { models } from './models'
 import { app } from './controllers/api-base'
 import './controllers/misc-api'
 import './controllers/member-api'
+import './controllers/flag-inapi'
 
 const main = async function (): Promise<void> {
   await models.autoMigrate()

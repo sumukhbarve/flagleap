@@ -3,6 +3,8 @@ import type { Lookable, AcceptorFn } from 'monoduck'
 import { _, lookduck, roqsduck } from 'monoduck'
 import type { ZMemberWoHpass, ZFlag, ZRule } from '../shared/z-models'
 
+export const loadingMsg = lookduck.observable('')
+
 export const me = lookduck.observable<ZMemberWoHpass | null>(null)
 export const inapiToken = lookduck.observable('')
 export const loggedIn = lookduck.computed(function () {
@@ -52,7 +54,7 @@ export const flagMap = lookduck.observable<Record<string, ZFlag>>({})
 export const setFlags = makeSetObjs(flagMap)
 export const flagList = lookduck.computed(function (): ZFlag[] {
   // TODO: sort better?
-  return Object.values(flagMap).sort((a, b) => a.id <= b.id ? -1 : +1)
+  return Object.values(flagMap.get()).sort((a, b) => a.id <= b.id ? -1 : +1)
 })
 export const currentFlagId = lookduck.observable('')
 export const currentFlag = lookduck.computed(function (): ZFlag | null {
@@ -65,7 +67,7 @@ export const ruleMap = lookduck.observable<Record<string, ZRule>>({})
 export const setRules = makeSetObjs(ruleMap)
 export const ruleList = lookduck.computed(function () {
   // TODO: sort better?
-  return Object.values(ruleMap).sort((a, b) => a.rank <= b.rank ? -1 : +1)
+  return Object.values(ruleMap.get()).sort((a, b) => a.rank <= b.rank ? -1 : +1)
 })
 
 // NB: ids of rulesless flags aren't included in flagwiseRuleList..

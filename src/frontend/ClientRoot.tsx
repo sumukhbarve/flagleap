@@ -2,22 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { RouteInfo } from 'monoduck'
+import { _ } from 'monoduck'
 import * as store from './store'
+import { Link } from './components/Link'
 import { SetupRoute } from './components/SetupRoute'
 import { LoginRoute } from './components/LoginRoute'
 import { FlagListerRoute } from './components/FlagListerRoute'
-
-const RoqsLink = store.RoqsLink
-const Link: React.FC<{to: RouteInfo}> = function ({ to, children }) {
-  return (
-    <RoqsLink to={to}>
-      <span style={{ color: 'navy', borderBottom: '2px solid blue' }}>
-        {children}
-      </span>
-    </RoqsLink>
-  )
-}
+import { FlagEditorRoute } from './components/FlagEditorRoute'
 
 const RouteAAA: React.VFC = function () {
   const [val, setVal] = React.useState('')
@@ -40,24 +31,35 @@ const RouteCCC: React.VFC = function () {
   return <h2>Mein hun route CCC</h2>
 }
 
-const routeMap: Record<string, React.ReactElement> = {
-  setup: <SetupRoute />,
-  login: <LoginRoute />,
-  flagLister: <FlagListerRoute />,
-  aaa: <RouteAAA />,
-  bbb: <RouteBBB />,
-  ccc: <RouteCCC />
+const routeMap: Record<string, React.VFC> = {
+  setup: SetupRoute,
+  login: LoginRoute,
+  flagLister: FlagListerRoute,
+  flagEditor: FlagEditorRoute,
+  aaa: RouteAAA,
+  bbb: RouteBBB,
+  ccc: RouteCCC
 }
-
 const RouteNotFound: React.VFC = function () {
   return <h2>Asa kuthlach route nahi (404ish)</h2>
+}
+const ActiveRoute: React.VFC = function () {
+  const routeInfo = store.useRouteInfo()
+  const RouteComponent = routeMap[routeInfo.id] ?? RouteNotFound
+  console.log(routeInfo, RouteComponent)
+  return <RouteComponent />
+}
+
+const LoadingIndicator: React.VFC = function () {
+  const loadingMsg = store.use(store.loadingMsg)
+  return _.bool(loadingMsg) ? <h3>{loadingMsg}</h3> : null
 }
 
 const ClientRoot: React.VFC = function () {
   const routeInfo = store.useRouteInfo()
-  const routeEl = routeMap[routeInfo.id] ?? <RouteNotFound />
   return (
     <div className='container'>
+      <LoadingIndicator />
       <h1>FlagLeap</h1>
       <nav>
         <Link to={{ id: 'aaa' }}>aaa</Link> |{' '}
@@ -68,8 +70,9 @@ const ClientRoot: React.VFC = function () {
         <Link to={{ id: 'login' }}>login</Link> |{' '}
         <Link to={{ id: 'flagLister' }}>flags</Link> |{' '}
       </nav>
+      <pre>nav routeInfo: {JSON.stringify(routeInfo)}</pre>
       <hr />
-      {routeEl}
+      <ActiveRoute />
     </div>
   )
 }

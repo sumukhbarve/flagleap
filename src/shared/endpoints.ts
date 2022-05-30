@@ -11,6 +11,7 @@ const include = true
 
 const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
+type ZInapiToken = z.infer<typeof zInapiToken>
 const zExapiToken = z.object({ api_key: z.string() })
 const zAuthSuccess = zInapiToken.extend({ member: zMemberWoHpass })
 type ZAuthSuccess = z.infer<typeof zAuthSuccess>
@@ -78,7 +79,11 @@ const deleteFlag = tapiduck.endpoint({
 // Rules (internal):
 const createRule = tapiduck.endpoint({
   path: '/inapi/createRule',
-  zReq: zInapiToken.extend({ flag_id: z.string() }),
+  zReq: zInapiToken.extend({
+    flag_id: z.string(),
+    mode: zModeEnum,
+    rank: z.number()
+  }),
   zRes: zRule
 })
 const getFlagRules = tapiduck.endpoint({
@@ -91,8 +96,6 @@ const updateRule = tapiduck.endpoint({
   zReq: zInapiToken.extend({
     rule: zRule.pick({
       id: include,
-      live_exists: include,
-      test_exists: include,
       enabled: include,
       rank: include,
       lhs_operand_key: include,
@@ -128,7 +131,7 @@ const exapiReadFlags = tapiduck.endpoint({
   path: '/exapi/readFlags',
   zReq: zExapiToken.extend({
     flag_ids: z.array(z.string()).optional(),
-    mode: z.string(),
+    mode: zModeEnum,
     traits: zTraits
   }),
   zRes: zFlagReadoutMap
@@ -159,5 +162,5 @@ const api = {
   }
 }
 
-export type { ZAuthSuccess }
+export type { ZAuthSuccess, ZInapiToken }
 export { api }

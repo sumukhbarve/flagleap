@@ -4,9 +4,10 @@ import { AuthWall } from './AuthWall'
 import { roqsduck, tapiduck } from 'monoduck'
 import * as store from '../store'
 import { api } from '../../shared/endpoints'
+import { useMountExpectsLoggedOut } from '../hooks'
 
 export const SetupRoute: React.VFC = function () {
-  // TODO: Redirect to flag lister if already logged in.
+  useMountExpectsLoggedOut()
   const [fname, setFname] = React.useState('')
   const [lname, setLname] = React.useState('')
   const [email, setEmail] = React.useState('')
