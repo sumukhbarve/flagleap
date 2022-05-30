@@ -13,8 +13,6 @@ export const loggedIn = lookduck.computed(function () {
 export const loggedOut = lookduck.computed(() => _.not(loggedIn.get()))
 
 export const mode = lookduck.observable<'live' | 'test'>('test')
-// export const inLiveMode = lookduck.computed(() => mode.get() === 'live')
-// export const inTestMode = lookduck.computed(() => mode.get() === 'test')
 export const modeEnabledKey = lookduck.computed(
   function (): 'live_enabled' | 'test_enabled' {
     return `${mode.get()}_enabled`
@@ -49,9 +47,31 @@ const makeSetObjs = function <T extends {id: string}>(
 
   return setObjs
 }
+const makeDeleteObjsById = function <T extends {id: string}>(
+  objMap: Observable<Record<string, T>>
+): (_idsToDel: string[]) => void {
+  const deleteObjsById = function (_idsToDel: string[]): void {
+    const _idsToDelSet = new Set(_idsToDel)
+    const _oldObjMap = objMap.get()
+    const _newObjMap: (typeof _oldObjMap) = {}
+    let _deleteDetected = false
+    _.each(Object.entries(_oldObjMap), function ([id, obj]) {
+      if (_idsToDelSet.has(id)) {
+        _deleteDetected = true
+      } else {
+        _newObjMap[id] = obj
+      }
+    })
+    if (_deleteDetected) {
+      objMap.set(_newObjMap)
+    }
+  }
+  return deleteObjsById
+}
 
 export const flagMap = lookduck.observable<Record<string, ZFlag>>({})
 export const setFlags = makeSetObjs(flagMap)
+export const deleteFlagsById = makeDeleteObjsById(flagMap)
 export const flagList = lookduck.computed(function (): ZFlag[] {
   // TODO: sort better?
   return Object.values(flagMap.get()).sort((a, b) => a.id <= b.id ? -1 : +1)
@@ -65,6 +85,7 @@ export const currentFlag = lookduck.computed(function (): ZFlag | null {
 
 export const ruleMap = lookduck.observable<Record<string, ZRule>>({})
 export const setRules = makeSetObjs(ruleMap)
+export const deleteRulesById = makeDeleteObjsById(ruleMap)
 export const ruleList = lookduck.computed(function () {
   // TODO: sort better?
   return Object.values(ruleMap.get()).sort((a, b) => a.rank <= b.rank ? -1 : +1)

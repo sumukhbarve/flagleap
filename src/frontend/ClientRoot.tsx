@@ -15,7 +15,7 @@ const RouteAAA: React.VFC = function () {
   return (
     <form onSubmit={e => { e.preventDefault(); alert(val) }}>
       <h4>Simple Form</h4>
-      <input value={val} onChange={e => setVal(e.target.value)} required /> {' '}
+      <input value={val} onChange={e => setVal(e.target.value)} required />{' '}
       <button>Submit</button>
       <br />
       {val}
@@ -85,6 +85,9 @@ const ClientRoot: React.VFC = function () {
       <pre>nav routeInfo: {JSON.stringify(routeInfo)}</pre>
       <hr />
       <ActiveRoute />
+      <hr />
+      {/* <code>InapiToken:</code>
+      <pre><small>{store.use(store.inapiToken)}</small></pre> */}
     </div>
   )
 }

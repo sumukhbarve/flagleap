@@ -4,7 +4,7 @@ import { api } from '../../shared/endpoints'
 import { app } from './api-base'
 import { models } from '../models'
 
-tapiduck.route(app, api.external.readFlag, async function (reqdata) {
+tapiduck.route(app, api.external.evalFlag, async function (reqdata) {
   const flagId = reqdata.flag_id
   const enKey: 'live_enabled' | 'test_enabled' =
     `${reqdata.mode}_enabled`
@@ -16,7 +16,7 @@ tapiduck.route(app, api.external.readFlag, async function (reqdata) {
   return { flag_id: flag.id, enabled: flag[enKey] === 1, value: '' }
 })
 
-tapiduck.route(app, api.external.readFlags, async function (reqdata) {
+tapiduck.route(app, api.external.evalFlags, async function (reqdata) {
   const flags = await models.flag.findAll({})
   const enKey: 'live_enabled' | 'test_enabled' =
     `${reqdata.mode}_enabled`

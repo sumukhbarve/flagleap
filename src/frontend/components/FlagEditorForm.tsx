@@ -62,7 +62,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
       </Row>
 
       <Button type='submit' className='mt-3 mb-3'>Save</Button>
-      <pre>flagX: {JSON.stringify(flagX, null, 4)}</pre>
+      {/* <pre>flagX: {JSON.stringify(flagX, null, 4)}</pre> */}
     </Form>
   )
 }

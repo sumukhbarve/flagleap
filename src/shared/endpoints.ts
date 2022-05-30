@@ -117,8 +117,8 @@ const deleteRule = tapiduck.endpoint({
 // External API: ///////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////////////////////////////
 
-const exapiReadFlag = tapiduck.endpoint({
-  path: '/exapi/readFlag',
+const evalFlag = tapiduck.endpoint({
+  path: '/exapi/evalFlag',
   zReq: zExapiToken.extend({
     flag_id: z.string(),
     mode: zModeEnum,
@@ -127,8 +127,8 @@ const exapiReadFlag = tapiduck.endpoint({
   }),
   zRes: zFlagReadout
 })
-const exapiReadFlags = tapiduck.endpoint({
-  path: '/exapi/readFlags',
+const evalFlags = tapiduck.endpoint({
+  path: '/exapi/evalFlags',
   zReq: zExapiToken.extend({
     flag_ids: z.array(z.string()).optional(),
     mode: zModeEnum,
@@ -136,6 +136,8 @@ const exapiReadFlags = tapiduck.endpoint({
   }),
   zRes: zFlagReadoutMap
 })
+
+// Export: /////////////////////////////////////////////////////////////////////
 
 const api = {
   common: {
@@ -157,8 +159,8 @@ const api = {
     deleteRule
   },
   external: {
-    readFlag: exapiReadFlag,
-    readFlags: exapiReadFlags
+    evalFlag,
+    evalFlags
   }
 }
 

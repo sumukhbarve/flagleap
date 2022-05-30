@@ -7,6 +7,7 @@ import './controllers/misc-api'
 import './controllers/member-api'
 import './controllers/flag-inapi'
 import './controllers/flag-exapi'
+import './controllers/rule-inapi'
 
 const main = async function (): Promise<void> {
   await models.autoMigrate()
