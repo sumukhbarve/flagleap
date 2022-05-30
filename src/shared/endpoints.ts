@@ -157,8 +157,8 @@ const api = {
     deleteRule
   },
   external: {
-    exapiReadFlag,
-    exapiReadFlags
+    readFlag: exapiReadFlag,
+    readFlags: exapiReadFlags
   }
 }
 

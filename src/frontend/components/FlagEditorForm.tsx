@@ -6,6 +6,7 @@ import type { ZFlag } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 
 export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
+  // const flag = store.use(store.currentFlag) as ZFlag
   const [flagX, setFlagX] = React.useState({ ...flag })
   const modeEnabledKey = store.use(store.modeEnabledKey)
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
@@ -23,14 +24,16 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
       <Row>
 
         <Col md={2}>
-          <Form.Label>Enabled (y/n)</Form.Label>
-          <Form.Control
-            type='text' placeholder='y/n' required pattern='y|n'
-            value={flagX[modeEnabledKey] === 1 ? 'y' : 'n'}
-            onChange={e => setFlagX({
-              ...flagX, [modeEnabledKey]: e.target.value === 'y' ? 1 : 0
+          <Form.Label>Enabled</Form.Label>
+          <Form.Select
+            value={flagX[modeEnabledKey]}
+            onChange={evt => setFlagX({
+              ...flagX, [modeEnabledKey]: Number(evt.target.value)
             })}
-          />
+          >
+            <option value={0}>False</option>
+            <option value={1}>True</option>
+          </Form.Select>
         </Col>
 
         <Col md={8}>
@@ -38,14 +41,28 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
           <Form.Control
             type='text' placeholder='Description'
             value={flagX.description}
-            onChange={e => setFlagX({
-              ...flagX, description: e.target.value
+            onChange={evt => setFlagX({
+              ...flagX, description: evt.target.value
             })}
           />
         </Col>
+
+        <Col md={2}>
+          <Form.Label>Archived</Form.Label>
+          <Form.Select
+            value={flagX.archived}
+            onChange={evt => setFlagX({
+              ...flagX, archived: Number(evt.target.value)
+            })}
+          >
+            <option value={0}>False</option>
+            <option value={1}>True</option>
+          </Form.Select>
+        </Col>
       </Row>
 
-      <Button type='submit' className='mt-3'>Save</Button>
+      <Button type='submit' className='mt-3 mb-3'>Save</Button>
+      <pre>flagX: {JSON.stringify(flagX, null, 4)}</pre>
     </Form>
   )
 }

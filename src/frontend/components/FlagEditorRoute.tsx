@@ -18,8 +18,8 @@ export const FlagEditorRoute: React.VFC = function () {
   return (
     <div>
       <h2>Flag <code>{flagId}</code></h2>
-      <FlagEditorForm flag={currentFlag} />
-      <pre>{JSON.stringify(currentFlag, null, 4)}</pre>
+      <FlagEditorForm flag={currentFlag} key={JSON.stringify(currentFlag)} />
+      <pre>currentFlag: {JSON.stringify(currentFlag, null, 4)}</pre>
     </div>
   )
 }
