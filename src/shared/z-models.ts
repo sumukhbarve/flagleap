@@ -55,16 +55,20 @@ const zOperatorEnum = z.enum([
 ])
 type ZOperatorEnum = z.infer<typeof zOperatorEnum>
 
+const zOperandTypeEnum = z.enum(['string', 'number'])
+type ZOperandTypeEnum = z.infer<typeof zOperandTypeEnum>
+
 const zRule = zBase.extend({
   flag_id: z.string(),
   live_exists: zBoolish,
   test_exists: zBoolish,
-  enabled: zBoolish,
   rank: z.number(),
+  description: z.string(),
+  negated: zBoolish,
+  operand_type: zOperandTypeEnum,
   lhs_operand_key: z.string(),
   operator: zOperatorEnum,
   rhs_operand_value: z.string(),
-  negated: zBoolish,
   result_value: z.string()
 })
 type ZRule = z.infer<typeof zRule>
@@ -73,12 +77,13 @@ const defaultRuleRow: ZRule = {
   flag_id: '',
   live_exists: 0,
   test_exists: 0,
-  enabled: 0,
   rank: 0,
+  description: '',
+  negated: 0,
+  operand_type: 'number',
   lhs_operand_key: '',
   operator: '$eq',
   rhs_operand_value: '',
-  negated: 0,
   result_value: ''
 }
 
@@ -97,17 +102,17 @@ type ZFlagReadoutMap = z.infer<typeof zFlagReadoutMap>
 const zModeEnum = z.enum(['live', 'test'])
 type ZModeEnum = z.infer<typeof zModeEnum>
 
-const zTraits = z.record(z.union([z.string(), z.number(), z.boolean()]))
+const zTraits = z.record(z.union([z.string(), z.number()]))
 type ZTraits = z.infer<typeof zTraits>
 
 // Export: /////////////////////////////////////////////////////////////////////
 
 export type {
-  ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZRule,
+  ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZOperandTypeEnum, ZRule,
   ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
 }
 export {
   zMember, defaultMemberRow, zMemberWoHpass, zFlag, defaultFlagRow,
-  zOperatorEnum, zRule, defaultRuleRow, zFlagReadout, zFlagReadoutMap,
-  zModeEnum, zTraits
+  zOperatorEnum, zOperandTypeEnum, zRule, defaultRuleRow, zFlagReadout,
+  zFlagReadoutMap, zModeEnum, zTraits
 }

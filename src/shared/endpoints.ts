@@ -96,12 +96,13 @@ const updateRule = tapiduck.endpoint({
   zReq: zInapiToken.extend({
     rule: zRule.pick({
       id: include,
-      enabled: include,
       rank: include,
+      description: include,
+      negated: include,
+      operand_type: include,
       lhs_operand_key: include,
       operator: include,
       rhs_operand_value: include,
-      negated: include,
       result_value: include
     })
   }),

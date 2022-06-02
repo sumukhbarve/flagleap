@@ -1,7 +1,7 @@
 import React from 'react'
-import { tapiduck } from 'monoduck'
+import { _, tapiduck } from 'monoduck'
 import type { ZRule } from '../../shared/z-models'
-import { zOperatorEnum } from '../../shared/z-models'
+import { zOperatorEnum, zOperandTypeEnum } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 import * as store from '../store'
 import { Button, Modal, Form, Row, Col } from 'react-bootstrap'
@@ -33,10 +33,9 @@ export const EditRuleButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={onSubmit}>
-            <Row className='mb-3'>
-
-              <Col xs md={4}>
-                <Form.Label>Rule rank:</Form.Label>
+            <h5 className='mt-3'>Rank &amp; Description:</h5>{/* - - - - - - - - - - - - - - - */}
+            <Row>
+              <Col xs md={2}>
                 <Form.Control
                   type='number'
                   value={ruleX.rank} min={0} step={1}
@@ -44,34 +43,62 @@ export const EditRuleButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
                     setRuleX({ ...ruleX, rank: Number(evt.target.value) })
                   }}
                 />
+                <Form.Text>Rank</Form.Text>
+              </Col>
+
+              <Col xs md={10}>
+                <Form.Control
+                  type='text' placeholder='Description ...'
+                  value={ruleX.description}
+                  onChange={function (evt) {
+                    setRuleX({ ...ruleX, description: evt.target.value })
+                  }}
+
+                />
+                <Form.Text>Description</Form.Text>
+              </Col>
+            </Row>
+
+            {/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */}
+            <h5 className='mt-3'>Rule Condition:</h5>
+            <Row>
+              <Col xs md={2}>
+                <Form.Select
+                  value={`${ruleX.negated},${ruleX.operand_type}`}
+                  onChange={function (evt) {
+                    const [negatedStr, operandType] = evt.target.value.split(',')
+                    setRuleX({
+                      ...ruleX,
+                      negated: Number(negatedStr === '1'),
+                      operand_type: zOperandTypeEnum.parse(operandType)
+                    })
+                  }}
+                >
+                  {zOperandTypeEnum.options.map(operandType => (
+                    <React.Fragment key={operandType}>
+                      {[0, 1].map(negated => (
+                        <option value={`${negated},${operandType}`} key={`${negated},${operandType}`}>
+                          if {_.bool(negated) ? 'not' : ''} ({operandType})
+                        </option>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </Form.Select>
+                <Form.Text>condition type</Form.Text>
               </Col>
 
               <Col xs md={4}>
-                <Form.Label>IF trait:</Form.Label>
                 <Form.Control
-                  type='text'
+                  type='text' placeholder='trait key (eg. user_id)'
                   value={ruleX.lhs_operand_key}
                   onChange={function (evt) {
                     setRuleX({ ...ruleX, lhs_operand_key: evt.target.value })
                   }}
                 />
+                <Form.Text>trait key, eg: <i>user_id</i></Form.Text>
               </Col>
 
-              <Col xs md={4}>
-                <Form.Label>not?</Form.Label>
-                <Form.Select
-                  value={ruleX.negated}
-                  onChange={function (evt) {
-                    setRuleX({ ...ruleX, negated: Number(evt.target.value) })
-                  }}
-                >
-                  <option value={0}>is/does{/* not negated */}</option>
-                  <option value={1}>is/does NOT{/* negated */}</option>
-                </Form.Select>
-              </Col>
-
-              <Col xs md={4}>
-                <Form.Label>what?</Form.Label>
+              <Col xs md={2}>
                 <Form.Select
                   value={ruleX.operator}
                   onChange={function (evt) {
@@ -84,10 +111,10 @@ export const EditRuleButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
                     op => <option value={op} key={op}>{op}</option>
                   )}
                 </Form.Select>
+                <Form.Text>operator, eg: <i>$endswith</i></Form.Text>
               </Col>
 
               <Col xs md={4}>
-                <Form.Label>than/to/with?</Form.Label>
                 <Form.Control
                   type='text'
                   value={ruleX.rhs_operand_value}
@@ -95,10 +122,14 @@ export const EditRuleButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
                     setRuleX({ ...ruleX, rhs_operand_value: evt.target.value })
                   }}
                 />
+                <Form.Text>operand value, eg: <i>123</i></Form.Text>
               </Col>
+            </Row>
 
-              <Col xs md={4}>
-                <Form.Label>THEN result:</Form.Label>
+            {/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */}
+            <h5 className='mt-3'>Rule Result:</h5>
+            <Row>
+              <Col xs md={12}>
                 <Form.Control
                   type='text'
                   value={ruleX.result_value}
@@ -106,10 +137,11 @@ export const EditRuleButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
                     setRuleX({ ...ruleX, result_value: evt.target.value })
                   }}
                 />
+                <Form.Text>result value, served when condition is satisfied</Form.Text>
               </Col>
             </Row>
 
-            <Form.Group className='mb-3'>
+            <Form.Group className='mt-3'>
               <Button type='submit' variant='primary'>Save</Button>{' '}
               <Button variant='secondary' onClick={onHide}>Cancel</Button>
             </Form.Group>
