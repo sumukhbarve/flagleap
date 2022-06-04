@@ -92,7 +92,7 @@ export const flagwiseRuleList = lookduck.computed(function () {
     if (!_.keyHas(flagwiseRules, _flagId)) {
       flagwiseRules[_flagId] = []
     }
-    flagwiseRules[_flagId].push(_rule)
+    flagwiseRules[_flagId]?.push(_rule)
   })
   return flagwiseRules
 })
