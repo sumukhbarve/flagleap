@@ -69,7 +69,8 @@ const parseNumIfPossible = function (str: string): number | string {
 const checkRuleMatch = function (rule: ZRule, traits: ZTraits): boolean {
   const a = traits[rule.lhs_operand_key] ?? null
   if (_.nullIs(a)) { return false }
-  const b = parseNumIfPossible(rule.rhs_operand_value)
+  const strB = rule.rhs_operand_value
+  const b = _.numberIs(a) ? parseNumIfPossible(strB) : strB
   const opFn = opMap[rule.operator]
   const opOutput = opFn(a, b)
   if (_.nullIs(opOutput)) { return false }

@@ -15,7 +15,8 @@ tapiduck.route(app, api.external.evalFlag, async function (reqdata) {
     return { flag_id: reqdata.flag_id, enabled: false, value: '' }
   }
   const rules: ZRule[] = await models.rule.findAll({
-    where: { flag_id: flag.id, [modeRing.exists]: 1 }
+    where: { flag_id: flag.id, [modeRing.exists]: 1 },
+    order: [['rank', 'ASC']]
   })
   const mRule = ruleMatcher(rules, reqdata.traits)
   return {
@@ -29,11 +30,13 @@ tapiduck.route(app, api.external.evalFlags, async function (reqdata) {
   const iFlagIds = reqdata.flag_ids
   const flagWhere = _.bool(iFlagIds) ? { id: { [SqlOp.in]: iFlagIds } } : {}
   const flags = await models.flag.findAll({ where: flagWhere })
+  const modeRing = getModeRing(reqdata.mode)
   const enFlags = _.filter(flags, f => f[modeRing.enabled] === 1)
   const enFlagIds = _.map(enFlags, f => f.id)
-  const modeRing = getModeRing(reqdata.mode)
-  const ruleWhere = { flag_id: { [SqlOp.in]: enFlagIds }, [modeRing.exists]: 1 }
-  const rules: ZRule[] = await models.rule.findAll({ where: ruleWhere })
+  const rules: ZRule[] = await models.rule.findAll({
+    where: { flag_id: { [SqlOp.in]: enFlagIds }, [modeRing.exists]: 1 },
+    order: [['rank', 'ASC']]
+  })
   const flagRulesMap = _.groupBy(rules, r => r.flag_id)
   const output: ZFlagReadoutMap = {}
   _.each(flags, function (flag) {
