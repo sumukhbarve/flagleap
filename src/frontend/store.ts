@@ -2,6 +2,7 @@ import React from 'react'
 import type { Lookable, AcceptorFn } from 'monoduck'
 import { _, lookduck, roqsduck } from 'monoduck'
 import type { ZMemberWoHpass, ZFlag, ZRule } from '../shared/z-models'
+import { getModeRing } from '../shared/helpers'
 
 export const loadingMsg = lookduck.observable('')
 
@@ -13,16 +14,7 @@ export const loggedIn = lookduck.computed(function () {
 export const loggedOut = lookduck.computed(() => _.not(loggedIn.get()))
 
 export const mode = lookduck.observable<'live' | 'test'>('test')
-export const modeEnabledKey = lookduck.computed(
-  function (): 'live_enabled' | 'test_enabled' {
-    return `${mode.get()}_enabled`
-  }
-)
-export const modeExistsKey = lookduck.computed(
-  function (): 'live_exists' | 'test_exists' {
-    return `${mode.get()}_exists`
-  }
-)
+export const modeRing = lookduck.computed(() => getModeRing(mode.get()))
 
 // TODO: Import type Observable from monoduck (lookduck)
 type Observable<T> = Lookable<T> & { set: AcceptorFn<T> }
@@ -106,12 +98,12 @@ export const flagwiseRuleList = lookduck.computed(function () {
 })
 export const currentRules = lookduck.computed(function (): ZRule[] {
   const _flagId = currentFlagId.get()
-  const _modeExistsKey = modeExistsKey.get()
+  const _modeRing = modeRing.get()
   const _flagwiseRules = flagwiseRuleList.get()
   if (_.not(_flagId)) { return [] }
   const _rules = _flagwiseRules[_flagId]
   if (_.not(_rules)) { return [] }
-  return _rules.filter(r => r[_modeExistsKey])
+  return _rules.filter(r => r[_modeRing.exists])
 })
 
 export const use = lookduck.makeUseLookable(React)

@@ -8,7 +8,7 @@ import { api } from '../../shared/endpoints'
 export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   // const flag = store.use(store.currentFlag) as ZFlag
   const [flagX, setFlagX] = React.useState({ ...flag })
-  const modeEnabledKey = store.use(store.modeEnabledKey)
+  const modeRing = store.use(store.modeRing)
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.loadingMsg.set('Saving Flag ...')
@@ -26,9 +26,9 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         <Col md={2}>
           <Form.Label>Enabled</Form.Label>
           <Form.Select
-            value={flagX[modeEnabledKey]}
+            value={flagX[modeRing.enabled]}
             onChange={evt => setFlagX({
-              ...flagX, [modeEnabledKey]: Number(evt.target.value)
+              ...flagX, [modeRing.enabled]: Number(evt.target.value)
             })}
           >
             <option value={0}>False</option>
