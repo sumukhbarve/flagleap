@@ -51,7 +51,10 @@ tapiduck.route(app, api.internal.deleteFlag, async function (reqdata) {
   if (_.not(flag)) {
     throw new TapiError('No such flag.')
   }
+  // Delete the flag, along with all linked rules (in either mode).
+  const rules = await models.rule.findAll({ where: { flag_id: flag.id } })
+  // TODO:? _Consider_ deleting multiple flags in a single DB roundtrip.
+  await Promise.all(rules.map(async r => await models.rule.deleteById(r.id)))
   await models.flag.deleteById(flag.id)
-  // TODO: Delete all rules associated with the flag (in either mode).
   return { id: flag.id }
 })

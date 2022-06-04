@@ -6,6 +6,7 @@ import { FlagEditorForm } from './FlagEditorForm'
 import { api } from '../../shared/endpoints'
 import { RuleCard } from './RuleCard'
 import { CreateRuleButton } from './CreateRuleButton'
+import { FlagDeleteButton } from './FlagDeleteButton'
 
 export const FlagEditorRoute: React.VFC = function () {
   useMountExpectsLoggedIn()
@@ -34,7 +35,7 @@ export const FlagEditorRoute: React.VFC = function () {
     <div>
       <h2>Flag <code>{flagId}</code></h2>
       <FlagEditorForm flag={currentFlag} key={JSON.stringify(currentFlag)} />
-      {/* <pre>currentFlag: {JSON.stringify(currentFlag, null, 4)}</pre> */}
+      <FlagDeleteButton flagId={currentFlag.id} />
       <h4>Current Rules:</h4>
       {currentRules.map(
         rule => <RuleCard rule={rule} key={JSON.stringify(rule)} />
@@ -43,6 +44,7 @@ export const FlagEditorRoute: React.VFC = function () {
         flagId={currentFlag.id}
         newRank={Math.max(...[0, ..._.map(currentRules, r => r.rank)]) + 10}
       />
+
     </div>
   )
 }
