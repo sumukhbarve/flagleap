@@ -7,7 +7,7 @@ import { models } from '../models'
 import { auth } from '../auth'
 
 tapiduck.route(app, api.internal.setup, async function (reqdata) {
-  const memberCount = await models.member.count()
+  const memberCount = await models.member.count({})
   if (memberCount !== 0) {
     throw new TapiError('Setup already complete. Please log in.')
   }
