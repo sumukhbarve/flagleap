@@ -1,5 +1,5 @@
 import React from 'react'
-import { tapiduck } from 'monoduck'
+import { roqsduck, tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
 import * as store from '../store'
 import { Button, Modal, Form } from 'react-bootstrap'
@@ -15,9 +15,9 @@ export const CreateFlagButton: React.VFC = function () {
       inapiToken, flag_id: flagId
     })
     store.setFlags([flag])
-    store.loadingMsg.set('Creating Flag ...')
+    store.loadingMsg.set('')
     setShow(false)
-    // TODO: roqsduck.setRouteInfo({id: 'flagEditor', 'flagId': flag.id})
+    roqsduck.setRouteInfo({ id: 'flagEditor', flagId: flag.id })
   }
   return (
     <>

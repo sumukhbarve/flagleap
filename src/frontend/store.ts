@@ -12,6 +12,9 @@ export const loggedIn = lookduck.computed(function () {
   return _.bool(me.get()) && _.bool(inapiToken.get())
 })
 export const loggedOut = lookduck.computed(() => _.not(loggedIn.get()))
+export const defaultRouteId = lookduck.computed(function () {
+  return loggedOut.get() ? 'login' : 'flagLister'
+})
 
 export const mode = lookduck.observable<'live' | 'test'>('test')
 export const modeRing = lookduck.computed(() => getModeRing(mode.get()))

@@ -1,10 +1,12 @@
 import React from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { AuthWall } from './AuthWall'
-import { roqsduck, tapiduck } from 'monoduck'
+import { _, roqsduck, tapiduck } from 'monoduck'
 import * as store from '../store'
 import { api } from '../../shared/endpoints'
 import { useMountExpectsLoggedOut } from '../hooks'
+
+_.noop()
 
 export const LoginRoute: React.VFC = function () {
   useMountExpectsLoggedOut()
@@ -23,7 +25,7 @@ export const LoginRoute: React.VFC = function () {
   }
   return (
     <AuthWall>
-      <h2>Flagleap Login</h2>
+      <h2 className='mb-3'>Login</h2>
       <Form onSubmit={onSubmit}>
         <Form.Group className='mb-3'>
           <Form.Label>Email</Form.Label>

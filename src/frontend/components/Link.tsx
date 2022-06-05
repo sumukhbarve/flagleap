@@ -1,7 +1,7 @@
-import React from 'react'
-import type { RouteInfo } from 'monoduck'
 import { RoqsLink } from '../store'
 
+export const Link = RoqsLink
+/*
 interface LinkProps {
   to: RouteInfo
   style?: React.CSSProperties
@@ -16,3 +16,4 @@ export const Link: React.FC<LinkProps> = function (props) {
     </RoqsLink>
   )
 }
+*/

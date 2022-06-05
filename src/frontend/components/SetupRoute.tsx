@@ -24,7 +24,7 @@ export const SetupRoute: React.VFC = function () {
   }
   return (
     <AuthWall>
-      <h2>Flagleap Setup</h2>
+      <h2 className='mb-3'>Setup</h2>
       <Form onSubmit={onSubmit}>
         <Form.Group className='mb-3'>
           <Form.Label>First Name</Form.Label>
