@@ -6,7 +6,6 @@ import type { ZFlag } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 
 export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
-  // const flag = store.use(store.currentFlag) as ZFlag
   const [flagX, setFlagX] = React.useState({ ...flag })
   const modeRing = store.use(store.modeRing)
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
@@ -62,7 +61,6 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
       </Row>
 
       <Button type='submit' className='mt-3 mb-3'>Save</Button>
-      {/* <pre>flagX: {JSON.stringify(flagX, null, 4)}</pre> */}
     </Form>
   )
 }

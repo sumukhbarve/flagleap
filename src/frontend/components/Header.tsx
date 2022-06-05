@@ -9,8 +9,8 @@ const ModeToggleButton: React.VFC = function () {
   const variant = mode === 'live' ? 'success' : 'warning'
   return (
     <Button variant={variant} onClick={() => store.mode.set(otherMode)}>
-      In {mode.toUpperCase()} Mode &nbsp; | &nbsp;
-      <small>(Click to toggle)</small>
+      In <samp><b>{mode}</b></samp> mode &nbsp;
+      <span className='xxSmall'>. . . &nbsp; (Click to toggle)</span>
     </Button>
   )
 }
@@ -40,7 +40,7 @@ const LoggedOutNavCols: React.VFC = function () {
 const LoggedInNavCols: React.VFC = function () {
   return (
     <>
-      <Col>
+      <Col className='alignRight'>
         <ModeToggleButton />
       </Col>
     </>

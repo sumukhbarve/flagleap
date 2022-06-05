@@ -74,6 +74,13 @@ export const currentFlag = lookduck.computed(function (): ZFlag | null {
   const _flagMap = flagMap.get()
   return _flagMap[_flagId] ?? null
 })
+export const flagSearchText = lookduck.observable('')
+export const searchedFlagList = lookduck.computed(function () {
+  const _searchText = flagSearchText.get().trim().toLowerCase()
+  const _flagList = flagList.get()
+  if (_searchText === '') { return _flagList }
+  return _.filter(_flagList, flg => flg.id.toLowerCase().includes(_searchText))
+})
 
 export const ruleMap = lookduck.observable<Record<string, ZRule>>({})
 export const setRules = makeSetObjs(ruleMap)

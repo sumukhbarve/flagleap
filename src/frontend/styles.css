@@ -2,3 +2,11 @@
     max-width: 720px;
     margin: auto;
 }
+.bold { font-weight: bold; }
+.large { font-size: large; }
+.xLarge { font-size: xLarge; }
+.xSmall { font-size: x-small; }
+.xxSmall { font-size: xx-small; }
+.alignRight { text-align: right; }
+.gray { color: gray; }
+.lightgray { color: lightgray; }

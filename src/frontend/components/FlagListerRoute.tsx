@@ -5,10 +5,12 @@ import * as store from '../store'
 import { useMountExpectsLoggedIn, useOnMount } from '../hooks'
 import { CreateFlagButton } from './CreateFlagButton'
 import { FlagCard } from './FlagCard'
+import { Col, Row } from 'react-bootstrap'
+import { FlagSearchbox } from './FlagSearchbox'
 
 export const FlagListerRoute: React.VFC = function () {
   useMountExpectsLoggedIn()
-  const flagList = store.use(store.flagList)
+  const flagList = store.use(store.searchedFlagList)
   const inapiToken = store.use(store.inapiToken)
   const loggedIn = store.use(store.loggedIn)
   useOnMount(async function () {
@@ -23,10 +25,16 @@ export const FlagListerRoute: React.VFC = function () {
   })
   return (
     <div>
-      <h2>Flags</h2>
-      <div className='mb-3'>
-        <CreateFlagButton />
-      </div>
+      <h1 className='mb-3'>Flags</h1>
+      <Row>
+        <Col>
+          <FlagSearchbox />
+        </Col>
+        <Col className='alignRight'>
+          <CreateFlagButton />
+        </Col>
+      </Row>
+      <div className='mb-4' />
       {flagList.map(flag => <FlagCard flag={flag} key={flag.id} />)}
     </div>
   )
