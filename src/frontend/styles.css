@@ -7,6 +7,7 @@
 .xLarge { font-size: xLarge; }
 .xSmall { font-size: x-small; }
 .xxSmall { font-size: xx-small; }
-.alignRight { text-align: right; }
+.alignRight, .textAlignRight { text-align: right; }
+.textAlignCenter { text-align: center }
 .gray { color: gray; }
 .lightgray { color: lightgray; }

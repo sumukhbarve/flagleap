@@ -20,7 +20,7 @@ export const FlagDeleteButton: React.VFC<{flagId: string}> = function (props) {
     roqsduck.setRouteInfo({ id: 'flagLister' })
   }
   return (
-    <Button size='sm' variant='secondary' onClick={onDelete}>
+    <Button size='sm' variant='outline-secondary' onClick={onDelete}>
       Delete Flag
     </Button>
   )

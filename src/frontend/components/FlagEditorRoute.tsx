@@ -7,6 +7,7 @@ import { api } from '../../shared/endpoints'
 import { RuleCard } from './RuleCard'
 import { CreateRuleButton } from './CreateRuleButton'
 import { FlagDeleteButton } from './FlagDeleteButton'
+import { Col, Row } from 'react-bootstrap'
 
 export const FlagEditorRoute: React.VFC = function () {
   useMountExpectsLoggedIn()
@@ -33,9 +34,17 @@ export const FlagEditorRoute: React.VFC = function () {
   }
   return (
     <div>
-      <h2>Flag <code>{flagId}</code></h2>
+      <Row>
+        <Col>
+          <h1><code>{flagId}</code></h1>
+        </Col>
+        <Col className='alignRight'>
+          <FlagDeleteButton flagId={currentFlag.id} />
+        </Col>
+      </Row>
+      <div className='mb-3' />
       <FlagEditorForm flag={currentFlag} key={JSON.stringify(currentFlag)} />
-      <FlagDeleteButton flagId={currentFlag.id} />
+      <div className='mb-3' />
       <h4>Current Rules:</h4>
       {currentRules.map(
         rule => <RuleCard rule={rule} key={JSON.stringify(rule)} />

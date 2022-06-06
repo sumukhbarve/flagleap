@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
-import { tapiduck } from 'monoduck'
+import { _, tapiduck } from 'monoduck'
 import * as store from '../store'
 import type { ZFlag } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
@@ -8,11 +8,25 @@ import { api } from '../../shared/endpoints'
 export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   const [flagX, setFlagX] = React.useState({ ...flag })
   const modeRing = store.use(store.modeRing)
+  const computeSaved = function (): boolean {
+    return _.all([
+      flagX.description === flag.description,
+      // Note: otherModeRing.enabled is not considered here, on purpose.
+      flagX[modeRing.enabled] === flag[modeRing.enabled]
+    ])
+  }
+  const [saved, setSaved] = React.useState(computeSaved())
+  React.useEffect(() => setSaved(computeSaved())) // On every render
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.loadingMsg.set('Saving Flag ...')
     const updatedFlag = await tapiduck.fetch(api.internal.updateFlag, {
-      flag: flagX, inapiToken: store.inapiToken.get()
+      inapiToken: store.inapiToken.get(),
+      flag: {
+        id: flag.id,
+        [modeRing.enabled]: flagX[modeRing.enabled],
+        description: flagX.description
+      }
     })
     store.setFlags([updatedFlag])
     store.loadingMsg.set('')
@@ -21,46 +35,60 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   return (
     <Form onSubmit={onSubmit}>
       <Row>
+        <Col md={3} className=''>
+          <Form.Group>
+            <Button
+              variant='light' onClick={evt => {
+                setFlagX({
+                  ...flagX,
+                  [modeRing.enabled]: Number(_.not(flagX[modeRing.enabled]))
+                })
+              }}
+            >
+              <Form.Check
+                type='switch'
+                checked={flagX[modeRing.enabled] === 1}
+                onChange={evt => setFlagX({
+                  ...flagX, [modeRing.enabled]: Number(evt.target.checked)
+                })}
+                inline
+              />
+              <span style={{ minWidth: 30, display: 'inline-block' }}>
+                {_.bool(flagX[modeRing.enabled]) ? 'ON' : 'OFF'}
+              </span>
+            </Button>
+            <br />
+            <Form.Text>Status</Form.Text>
 
-        <Col md={2}>
-          <Form.Label>Enabled</Form.Label>
-          <Form.Select
-            value={flagX[modeRing.enabled]}
-            onChange={evt => setFlagX({
-              ...flagX, [modeRing.enabled]: Number(evt.target.value)
-            })}
-          >
-            <option value={0}>False</option>
-            <option value={1}>True</option>
-          </Form.Select>
+          </Form.Group>
         </Col>
 
-        <Col md={8}>
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            type='text' placeholder='Description'
-            value={flagX.description}
-            onChange={evt => setFlagX({
-              ...flagX, description: evt.target.value
-            })}
-          />
+        <Col md={7}>
+          <Form.Group>
+            <Form.Control
+              type='text'
+              placeholder='Description'
+              value={flagX.description}
+              onChange={evt => setFlagX({
+                ...flagX, description: evt.target.value
+              })}
+            />
+            <Form.Text>Description</Form.Text>
+          </Form.Group>
         </Col>
 
-        <Col md={2}>
-          <Form.Label>Archived</Form.Label>
-          <Form.Select
-            value={flagX.archived}
-            onChange={evt => setFlagX({
-              ...flagX, archived: Number(evt.target.value)
-            })}
+        <Col md={2} className='textAlignRight'>
+          <Button
+            type='submit'
+            variant={saved ? 'outline-secondary' : 'primary'}
+            disabled={saved}
           >
-            <option value={0}>False</option>
-            <option value={1}>True</option>
-          </Form.Select>
+            <span style={{ display: 'inline-block', minWidth: 45 }}>
+              Save{saved ? 'd' : ''}
+            </span>
+          </Button>
         </Col>
       </Row>
-
-      <Button type='submit' className='mt-3 mb-3'>Save</Button>
     </Form>
   )
 }

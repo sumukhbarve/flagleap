@@ -9,14 +9,14 @@ export const FlagEnabledToggler: React.VFC<{flag: ZFlag}> = function ({ flag }) 
   const modeRing = store.use(store.modeRing)
   // TODO: Use React.useCallback
   const onChange = async function (): Promise<void> {
-    const flagX = {
-      ...flag,
-      [modeRing.enabled]: Number(_.not(flag[modeRing.enabled]))
-    }
     store.loadingMsg.set('Toggling Flag ...')
     await _.sleep(1000)
     const updatedFlag = await tapiduck.fetch(api.internal.updateFlag, {
-      flag: flagX, inapiToken: store.inapiToken.get()
+      inapiToken: store.inapiToken.get(),
+      flag: {
+        id: flag.id,
+        [modeRing.enabled]: Number(_.not(flag[modeRing.enabled]))
+      }
     })
     store.setFlags([updatedFlag])
     store.loadingMsg.set('')

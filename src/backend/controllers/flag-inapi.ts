@@ -37,7 +37,7 @@ tapiduck.route(app, api.internal.updateFlag, async function (reqdata) {
   }
   const updatedFlag: ZFlag = {
     ...oldFlag,
-    ...reqdata.flag, // Zod strips excess props, so this should be safe.
+    ...reqdata.flag, // Zod strips extra props, & JSON.parse() is sans-undefined
     updated_at: Date.now(),
     updater_id: me.id
   }

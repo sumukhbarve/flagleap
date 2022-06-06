@@ -57,16 +57,25 @@ const getFlags = tapiduck.endpoint({
   zReq: zInapiToken,
   zRes: z.array(zFlag)
 })
+/*
+id: include,
+live_enabled: include,
+test_enabled: include,
+description: include,
+archived: include
+*/
 const updateFlag = tapiduck.endpoint({
   path: '/inapi/updateFlag',
   zReq: zInapiToken.extend({
-    flag: zFlag.pick({
-      id: include,
-      live_enabled: include,
-      test_enabled: include,
-      description: include,
-      archived: include
-    })
+    flag: zId.and(
+      // To allow surgical updates, all non-ID flag-props are optional.
+      zFlag.pick({
+        live_enabled: include,
+        test_enabled: include,
+        description: include,
+        archived: include
+      }).partial()
+    )
   }),
   zRes: zFlag
 })
