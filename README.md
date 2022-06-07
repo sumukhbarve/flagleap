@@ -2,7 +2,9 @@
 
 Leap forward with feature flags!
 
+***
 ![Flag Lister Screenshot](/screenshots/2022-06-08-flagLister.png)
+***
 
 ### What is it?
 
@@ -17,3 +19,10 @@ Leap forward with feature flags!
 - `npm run build`
 - `npm start`
 - Visit http://localhost:3000, and complete account setup
+
+
+### Pre-Alpha Software
+
+- FlagLeap is not currently suitable for production use.
+- Large sections of it are being (re-)written every weekend.
+- Object/function shapes are likely to undergo rapid change.
