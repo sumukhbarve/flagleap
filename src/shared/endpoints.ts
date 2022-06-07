@@ -101,7 +101,6 @@ const updateRule = tapiduck.endpoint({
       rank: include,
       description: include,
       negated: include,
-      operand_type: include,
       lhs_operand_key: include,
       operator: include,
       rhs_operand_value: include,

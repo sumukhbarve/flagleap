@@ -4,10 +4,9 @@ import * as store from '../store'
 import { useMountExpectsLoggedIn, useOnMount } from '../hooks'
 import { FlagEditorForm } from './FlagEditorForm'
 import { api } from '../../shared/endpoints'
-import { RuleCard } from './RuleCard'
-import { CreateRuleButton } from './CreateRuleButton'
 import { FlagDeleteButton } from './FlagDeleteButton'
 import { Col, Row } from 'react-bootstrap'
+import { RuleLister } from './RuleLister'
 
 export const FlagEditorRoute: React.VFC = function () {
   useMountExpectsLoggedIn()
@@ -42,17 +41,12 @@ export const FlagEditorRoute: React.VFC = function () {
           <FlagDeleteButton flagId={currentFlag.id} />
         </Col>
       </Row>
-      <div className='mb-3' />
+      <div className='mb-4' />
       <FlagEditorForm flag={currentFlag} key={JSON.stringify(currentFlag)} />
-      <div className='mb-3' />
-      <h4>Current Rules:</h4>
-      {currentRules.map(
-        rule => <RuleCard rule={rule} key={JSON.stringify(rule)} />
-      )}
-      <CreateRuleButton
-        flagId={currentFlag.id}
-        newRank={Math.max(...[0, ..._.map(currentRules, r => r.rank)]) + 10}
-      />
+      <div className='mb-4' />
+      <div style={{ borderBottom: '1px solid lightgray' }} />
+      <div className='mb-4' />
+      <RuleLister rules={currentRules} flag={currentFlag} />
 
     </div>
   )

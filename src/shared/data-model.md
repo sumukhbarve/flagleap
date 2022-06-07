@@ -25,7 +25,6 @@
 - rank: number
 - description: string
 - negated: boolean/tinyint `// negate operator?`
-- operand_type: 'number' | 'string' `// common for both operands`
 - lhs_operand_key: string `// trait key, dynamic operand`
 - operator: operator (from enum)
 - rhs_operand_value: string `// static operand`

@@ -1,7 +1,7 @@
 import React from 'react'
-import { _, tapiduck } from 'monoduck'
+import { tapiduck } from 'monoduck'
 import type { ZRule } from '../../shared/z-models'
-import { zOperatorEnum, zOperandTypeEnum } from '../../shared/z-models'
+import { zOperatorEnum } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 import * as store from '../store'
 import { Button, Form, Row, Col } from 'react-bootstrap'
@@ -24,6 +24,9 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
     alert('Rule saved.')
     close()
   }
+  const setPropX = function (k: keyof ZRule, v: ZRule[typeof k]): void {
+    setRuleX({ ...ruleX, [k]: v })
+  }
   return (
     <Form onSubmit={onSubmit}>
       <h5 className='mt-3'>Rank &amp; Description:</h5>{/* - - - - - - - - - - - - - - - */}
@@ -32,9 +35,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
           <Form.Control
             type='number'
             value={ruleX.rank} min={0} step={1}
-            onChange={function (evt) {
-              setRuleX({ ...ruleX, rank: Number(evt.target.value) })
-            }}
+            onChange={evt => setPropX('rank', Number(evt.target.value))}
           />
           <Form.Text>Rank</Form.Text>
         </Col>
@@ -43,10 +44,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
           <Form.Control
             type='text' placeholder='Description ...'
             value={ruleX.description}
-            onChange={function (evt) {
-              setRuleX({ ...ruleX, description: evt.target.value })
-            }}
-
+            onChange={evt => setPropX('description', evt.target.value)}
           />
           <Form.Text>Description</Form.Text>
         </Col>
@@ -57,47 +55,29 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
       <Row>
         <Col xs md={2}>
           <Form.Select
-            value={`${ruleX.negated},${ruleX.operand_type}`}
-            onChange={function (evt) {
-              const [negatedStr, operandType] = evt.target.value.split(',')
-              setRuleX({
-                ...ruleX,
-                negated: Number(negatedStr === '1'),
-                operand_type: zOperandTypeEnum.parse(operandType)
-              })
-            }}
+            value={ruleX.negated}
+            onChange={evt => setPropX('negated', Number(evt.target.value))}
           >
-            {zOperandTypeEnum.options.map(operandType => (
-              <React.Fragment key={operandType}>
-                {[0, 1].map(negated => (
-                  <option value={`${negated},${operandType}`} key={`${negated},${operandType}`}>
-                    if {_.bool(negated) ? 'not' : ''} ({operandType})
-                  </option>
-                ))}
-              </React.Fragment>
-            ))}
+            <option value={0}>If</option>
+            <option value={1}>If not</option>
           </Form.Select>
           <Form.Text>condition type</Form.Text>
         </Col>
 
-        <Col xs md={4}>
+        <Col xs md={3}>
           <Form.Control
             type='text' placeholder='trait key (eg. user_id)'
             value={ruleX.lhs_operand_key}
-            onChange={function (evt) {
-              setRuleX({ ...ruleX, lhs_operand_key: evt.target.value })
-            }}
+            onChange={evt => setPropX('lhs_operand_key', evt.target.value)}
           />
           <Form.Text>trait key, eg: <i>user_id</i></Form.Text>
         </Col>
 
-        <Col xs md={2}>
+        <Col xs md={3}>
           <Form.Select
             value={ruleX.operator}
             onChange={function (evt) {
-              setRuleX({
-                ...ruleX, operator: zOperatorEnum.parse(evt.target.value)
-              })
+              setPropX('operator', zOperatorEnum.parse(evt.target.value))
             }}
           >
             {zOperatorEnum.options.map(
@@ -126,9 +106,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
           <Form.Control
             type='text'
             value={ruleX.result_value}
-            onChange={function (evt) {
-              setRuleX({ ...ruleX, result_value: evt.target.value })
-            }}
+            onChange={evt => setPropX('result_value', evt.target.value)}
           />
           <Form.Text>result value, served when condition is satisfied</Form.Text>
         </Col>

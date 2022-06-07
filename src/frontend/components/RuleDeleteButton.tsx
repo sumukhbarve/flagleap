@@ -4,7 +4,7 @@ import { api } from '../../shared/endpoints'
 import * as store from '../store'
 import { Button } from 'react-bootstrap'
 
-export const DeleteRuleButton: React.VFC<{ruleId: string}> = function (props) {
+export const RuleDeleteButton: React.VFC<{ruleId: string}> = function (props) {
   const onDelete = async function (): Promise<void> {
     if (_.not(window.confirm('Are you sure?'))) {
       return undefined
@@ -14,13 +14,13 @@ export const DeleteRuleButton: React.VFC<{ruleId: string}> = function (props) {
       rule_id: props.ruleId,
       inapiToken: store.inapiToken.get()
     })
+    await _.sleep(1000)
     store.deleteRulesById([rule.id])
     store.loadingMsg.set('')
-    alert('Rule deleted.')
   }
   return (
-    <Button size='sm' variant='secondary' onClick={onDelete}>
-      Delete Rule
+    <Button size='sm' variant='link' onClick={onDelete}>
+      Delete
     </Button>
   )
 }

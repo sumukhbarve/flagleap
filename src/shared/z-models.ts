@@ -55,9 +55,6 @@ const zOperatorEnum = z.enum([
 ])
 type ZOperatorEnum = z.infer<typeof zOperatorEnum>
 
-const zOperandTypeEnum = z.enum(['string', 'number'])
-type ZOperandTypeEnum = z.infer<typeof zOperandTypeEnum>
-
 const zRule = zBase.extend({
   flag_id: z.string(),
   live_exists: zBoolish,
@@ -65,7 +62,6 @@ const zRule = zBase.extend({
   rank: z.number(),
   description: z.string(),
   negated: zBoolish,
-  operand_type: zOperandTypeEnum,
   lhs_operand_key: z.string(),
   operator: zOperatorEnum,
   rhs_operand_value: z.string(),
@@ -80,7 +76,6 @@ const defaultRuleRow: ZRule = {
   rank: 0,
   description: '',
   negated: 0,
-  operand_type: 'number',
   lhs_operand_key: '',
   operator: '$eq',
   rhs_operand_value: '',
@@ -108,11 +103,11 @@ type ZTraits = z.infer<typeof zTraits>
 // Export: /////////////////////////////////////////////////////////////////////
 
 export type {
-  ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZOperandTypeEnum, ZRule,
+  ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZRule,
   ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
 }
 export {
   zMember, defaultMemberRow, zMemberWoHpass, zFlag, defaultFlagRow,
-  zOperatorEnum, zOperandTypeEnum, zRule, defaultRuleRow, zFlagReadout,
-  zFlagReadoutMap, zModeEnum, zTraits
+  zOperatorEnum, zRule, defaultRuleRow, zFlagReadout, zFlagReadoutMap,
+  zModeEnum, zTraits
 }

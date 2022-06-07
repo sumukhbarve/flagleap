@@ -8,7 +8,7 @@ interface Props {
   flagId: string
   newRank: number
 }
-export const CreateRuleButton: React.VFC<Props> = function (props) {
+export const RuleCreateButton: React.VFC<Props> = function (props) {
   const { flagId, newRank } = props
   const onCreate = async function (): Promise<void> {
     store.loadingMsg.set('Creating Rule ...')
