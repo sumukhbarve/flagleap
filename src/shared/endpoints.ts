@@ -12,7 +12,7 @@ const include = true
 const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
 type ZInapiToken = z.infer<typeof zInapiToken>
-const zExapiToken = z.object({ api_key: z.string() })
+const zExapiToken = z.object({}) // was: z.object({ api_key: z.string() })
 const zAuthSuccess = zInapiToken.extend({ member: zMemberWoHpass })
 type ZAuthSuccess = z.infer<typeof zAuthSuccess>
 
