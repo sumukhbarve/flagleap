@@ -38,7 +38,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         <Col md={3} className=''>
           <Form.Group>
             <Button
-              variant='light' onClick={evt => {
+              variant='light' onClick={() => {
                 setFlagX({
                   ...flagX,
                   [modeRing.enabled]: Number(_.not(flagX[modeRing.enabled]))

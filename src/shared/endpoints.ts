@@ -57,13 +57,6 @@ const getFlags = tapiduck.endpoint({
   zReq: zInapiToken,
   zRes: z.array(zFlag)
 })
-/*
-id: include,
-live_enabled: include,
-test_enabled: include,
-description: include,
-archived: include
-*/
 const updateFlag = tapiduck.endpoint({
   path: '/inapi/updateFlag',
   zReq: zInapiToken.extend({
