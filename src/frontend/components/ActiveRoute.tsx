@@ -4,12 +4,33 @@ import { SetupRoute } from './SetupRoute'
 import { LoginRoute } from './LoginRoute'
 import { FlagListerRoute } from './FlagListerRoute'
 import { FlagEditorRoute } from './FlagEditorRoute'
+import { Link } from './Link'
+import { roqsduck } from 'monoduck'
+
+const DefaultBlankIdRoute: React.VFC = function () {
+  const defaultRouteId = store.use(store.defaultRouteId)
+  React.useEffect(function () {
+    // Timeout ensures update occurs _after_ parent(s)' subscription(s)
+    setTimeout(() => roqsduck.setRouteInfo({ id: defaultRouteId }), 0)
+  }, [])
+  return (
+    <div>
+      <h2>Redirecting ...</h2>
+      <p>
+        <Link to={{ id: defaultRouteId }}>
+          If you aren't redirected, please click <u>here</u>.
+        </Link>
+      </p>
+    </div>
+  )
+}
 
 const routeMap: Record<string, React.VFC> = {
   setup: SetupRoute,
   login: LoginRoute,
   flagLister: FlagListerRoute,
-  flagEditor: FlagEditorRoute
+  flagEditor: FlagEditorRoute,
+  '': DefaultBlankIdRoute
 }
 const NoSuchRoute: React.VFC = function () {
   return (

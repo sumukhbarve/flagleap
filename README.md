@@ -3,15 +3,14 @@
 Leap forward with feature flags!
 
 ### Screenshot:
-***
+
 ![Flag Lister Screenshot](/screenshots/2022-06-08-flagLister.png)
-***
 
 ### What is it?
 
 - Feature flag management, built with a bias toward simplicity & scalability.
 - Includes rule-based flag evaluation, supports for multiple rule operators.
-- Includes two modes: `live` and `test`. Rules in `test` mode don't `live` mode.
+- Two modes: `live` and `test`. Rules in `test` mode don't affect `live` mode.
 
 ### Quickstart:
 - `git clone https://github.com/sumukhbarve/flagleap.git`
@@ -33,7 +32,7 @@ curl --request POST \
 
 **Quick Notes:**
 - The `traits` object can be used to specify user-specific properties.
-- You can define flag-specific rules for trait-drive evaluations.
+- You can define flag-specific rules for trait-driven evaluations.
 
 
 ### Pre-Alpha Software

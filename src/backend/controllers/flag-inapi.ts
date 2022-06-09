@@ -9,8 +9,7 @@ import { auth } from '../auth'
 tapiduck.route(app, api.internal.createFlag, async function (reqdata) {
   const me = await auth.getMe(reqdata.inapiToken)
   const flagId = reqdata.flag_id
-  // TODO: Use .findById?
-  const existingFlag = await models.flag.findOne({ where: { id: flagId } })
+  const existingFlag = await models.flag.findById(flagId)
   if (_.bool(existingFlag)) {
     throw new TapiError(`Flag with ID '${flagId}' already exists.`)
   }

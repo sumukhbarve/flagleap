@@ -4,7 +4,7 @@ import { _, roqsduck } from 'monoduck'
 import * as store from './store'
 
 const useAsyncEffect = function (
-  effect?: () => unknown, cleanup?: () => unknown, deps?: unknown[]
+  effect?: () => void, cleanup?: () => void, deps?: unknown[]
 ): void {
   React.useEffect(function () {
     effect?.()
@@ -27,10 +27,9 @@ const makeUseMountExpectsElseRedir = function<T> (
   const useMountExpectsElseRedir = function (): void {
     const val = store.use(lookable)
     useOnMount(async function () {
-      await _.sleep(0) // TODO: Investigate the need for this.
-      // Removing it causes a direct visit to ?id=flagLister to break.
       if (val !== expectedVal) {
-        roqsduck.setRouteInfo({ id: redirToId })
+        await _.sleep(0) // Timeout allows lookable.subscribe() to happen first
+        setTimeout(() => roqsduck.setRouteInfo({ id: redirToId }), 0)
       }
     })
   }
