@@ -100,14 +100,21 @@ type ZModeEnum = z.infer<typeof zModeEnum>
 const zTraits = z.record(z.union([z.string(), z.number()]))
 type ZTraits = z.infer<typeof zTraits>
 
+const zFlagNotif = z.object({
+  flag_id: z.string(),
+  mode: zModeEnum
+  // Consider: enabled: z.boolean(),
+})
+type ZFlagNotif = z.infer<typeof zFlagNotif>
+
 // Export: /////////////////////////////////////////////////////////////////////
 
 export type {
   ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZRule,
-  ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits
+  ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits, ZFlagNotif
 }
 export {
   zMember, defaultMemberRow, zMemberWoHpass, zFlag, defaultFlagRow,
   zOperatorEnum, zRule, defaultRuleRow, zFlagReadout, zFlagReadoutMap,
-  zModeEnum, zTraits
+  zModeEnum, zTraits, zFlagNotif
 }

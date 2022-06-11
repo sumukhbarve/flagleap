@@ -6,6 +6,7 @@ import { api } from '../../shared/endpoints'
 import { app } from './api-base'
 import { models } from '../models'
 import { auth } from '../auth'
+import { emitFlagNotif, getModeFromRule } from './sock-util'
 
 tapiduck.route(app, api.internal.createRule, async function (reqdata) {
   const me = await auth.getMe(reqdata.inapiToken)
@@ -24,6 +25,7 @@ tapiduck.route(app, api.internal.createRule, async function (reqdata) {
     creator_id: me.id
   }
   await models.rule.create(rule)
+  emitFlagNotif(rule.flag_id, reqdata.mode)
   return rule
 })
 
@@ -45,6 +47,7 @@ tapiduck.route(app, api.internal.updateRule, async function (reqdata) {
     updater_id: me.id
   }
   await models.rule.replace(updatedRule)
+  emitFlagNotif(updatedRule.flag_id, getModeFromRule(updatedRule))
   return updatedRule
 })
 
@@ -55,5 +58,6 @@ tapiduck.route(app, api.internal.deleteRule, async function (reqdata) {
     throw new TapiError('No such rule.')
   }
   await models.rule.deleteById(rule.id)
+  emitFlagNotif(rule.flag_id, getModeFromRule(rule))
   return { id: rule.id }
 })

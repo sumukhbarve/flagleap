@@ -1,10 +1,12 @@
 import { _, tapiduck, TapiError } from 'monoduck'
 import type { ZFlag } from '../../shared/z-models'
-import { defaultFlagRow } from '../../shared/z-models'
+import { zModeEnum, defaultFlagRow } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 import { app } from './api-base'
 import { models } from '../models'
 import { auth } from '../auth'
+import { getModeRing } from '../../shared/helpers'
+import { emitFlagNotif } from './sock-util'
 
 tapiduck.route(app, api.internal.createFlag, async function (reqdata) {
   const me = await auth.getMe(reqdata.inapiToken)
@@ -20,6 +22,9 @@ tapiduck.route(app, api.internal.createFlag, async function (reqdata) {
     creator_id: me.id
   }
   await models.flag.create(flag)
+  _.each(zModeEnum.options, function (mode) {
+    emitFlagNotif(flag.id, mode)
+  })
   return flag
 })
 
@@ -41,6 +46,12 @@ tapiduck.route(app, api.internal.updateFlag, async function (reqdata) {
     updater_id: me.id
   }
   await models.flag.replace(updatedFlag)
+  _.each(zModeEnum.options, function (mode) {
+    const modeRing = getModeRing(mode)
+    if (oldFlag[modeRing.enabled] !== updatedFlag[modeRing.enabled]) {
+      emitFlagNotif(updatedFlag.id, mode)
+    }
+  })
   return updatedFlag
 })
 
@@ -55,5 +66,12 @@ tapiduck.route(app, api.internal.deleteFlag, async function (reqdata) {
   // TODO:? _Consider_ deleting multiple flags in a single DB roundtrip.
   await Promise.all(rules.map(async r => await models.rule.deleteById(r.id)))
   await models.flag.deleteById(flag.id)
+  _.each(zModeEnum.options, function (mode) {
+    const modeRing = getModeRing(mode)
+    if (_.bool(flag[modeRing.enabled])) {
+      // If was enabled, deleting effectively disables. Else no effective change
+      emitFlagNotif(flag.id, mode)
+    }
+  })
   return { id: flag.id }
 })

@@ -6,6 +6,7 @@ import { FlagListerRoute } from './FlagListerRoute'
 import { FlagEditorRoute } from './FlagEditorRoute'
 import { Link } from './Link'
 import { roqsduck } from 'monoduck'
+import { NotifListerRoute } from './NotifListerRoute'
 
 const DefaultBlankIdRoute: React.VFC = function () {
   const defaultRouteId = store.use(store.defaultRouteId)
@@ -27,6 +28,7 @@ const routeMap: Record<string, React.VFC> = {
   login: LoginRoute,
   flagLister: FlagListerRoute,
   flagEditor: FlagEditorRoute,
+  notifLister: NotifListerRoute,
   '': DefaultBlankIdRoute
 }
 const NoSuchRoute: React.VFC = function () {

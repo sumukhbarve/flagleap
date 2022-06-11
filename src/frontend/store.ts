@@ -1,8 +1,12 @@
 import React from 'react'
 import type { Observable } from 'monoduck'
-import { _, lookduck, roqsduck } from 'monoduck'
-import type { ZMemberWoHpass, ZFlag, ZRule } from '../shared/z-models'
+import { _, lookduck, roqsduck, tapiduck } from 'monoduck'
+import type {
+  ZMemberWoHpass, ZFlag, ZRule, ZFlagNotif
+} from '../shared/z-models'
 import { getModeRing } from '../shared/helpers'
+import { io } from 'socket.io-client'
+import { api } from '../shared/endpoints'
 
 export const loadingMsg = lookduck.observable('')
 
@@ -104,5 +108,13 @@ export const currentRules = lookduck.computed(function (): ZRule[] {
   return _rules.filter(r => r[_modeRing.exists])
 })
 
+// Hooks/Components: ///////////////////////////////////////////////////////////
 export const use = lookduck.makeUseLookable(React)
 export const { useRouteInfo, Link: RoqsLink } = roqsduck.injectReact(React)
+
+// Socket Related: /////////////////////////////////////////////////////////////
+const socket = io()
+export const flagNotifs = lookduck.observable<ZFlagNotif[]>([])
+tapiduck.sockOn(socket, api.external.sock.flagNotifFromServer, function (data) {
+  flagNotifs.set([data, ...flagNotifs.get()])
+})

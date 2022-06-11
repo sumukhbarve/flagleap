@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { tapiduck } from 'monoduck'
 import {
   zMemberWoHpass, zFlag, zRule, zFlagReadout,
-  zFlagReadoutMap, zModeEnum, zTraits // zMember, zMemberWoHpass, zOperatorEnum
+  zFlagReadoutMap, zModeEnum, zTraits, zFlagNotif
+  // zMember, zMemberWoHpass, zOperatorEnum
 } from './z-models'
 
 // Prelims: ////////////////////////////////////////////////////////////////////
@@ -63,6 +64,7 @@ const updateFlag = tapiduck.endpoint({
     flag: zId.and(
       // To allow surgical updates, all non-ID flag-props are optional.
       zFlag.pick({
+        // TODO: Switch to singular `mode` instead of having both
         live_enabled: include,
         test_enabled: include,
         description: include,
@@ -139,6 +141,13 @@ const evalFlags = tapiduck.endpoint({
   zRes: zFlagReadoutMap
 })
 
+// Socket Related: /////////////////////////////////////////////////////////////
+
+const flagNotifFromServer = tapiduck.sockpoint({
+  name: 'flagNotifFromServer',
+  zData: zFlagNotif
+})
+
 // Export: /////////////////////////////////////////////////////////////////////
 
 const api = {
@@ -162,7 +171,10 @@ const api = {
   },
   external: {
     evalFlag,
-    evalFlags
+    evalFlags,
+    sock: {
+      flagNotifFromServer
+    }
   }
 }
 

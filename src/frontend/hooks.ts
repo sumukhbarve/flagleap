@@ -5,15 +5,11 @@ import * as store from './store'
 
 type VoidFn = () => void // TODO: Import this?
 
-// The following type is written in a way that conforms with ts-standard.
-type EffectFn = VoidFn | (() => VoidFn | Promise<void> | Promise<VoidFn>)
-// It is equivalent to::
-//    () => (void | VoidFn | Promise<void | VoidFn>)
-// But @typescript-eslint/no-invalid-void-type says:
-//    If void is used as return type, it shouldn’t be a part of ... union ...
+// Type is `() => (void | VoidFn | Promise<void | VoidFn>)`; ts-standard likes:
+type FlexEffectFn = VoidFn | (() => VoidFn | Promise<void> | Promise<VoidFn>)
 
 const useAsyncEffect = function (
-  effect: EffectFn,
+  effect: FlexEffectFn,
   deps: unknown[] | undefined // accepts undefined, but only explicitly
 ): void {
   React.useEffect(function () {
