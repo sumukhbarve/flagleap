@@ -1,7 +1,7 @@
 import React from 'react'
 import { _, tapiduck } from 'monoduck'
 import * as store from '../store'
-import { useMountExpectsLoggedIn, useOnMount } from '../hooks'
+import { useMountExpectsLoggedIn, useAsyncEffect } from '../hooks'
 import { FlagEditorForm } from './FlagEditorForm'
 import { api } from '../../shared/endpoints'
 import { FlagDeleteButton } from './FlagDeleteButton'
@@ -15,7 +15,7 @@ export const FlagEditorRoute: React.VFC = function () {
   const currentFlag = store.use(store.currentFlag)
   const currentRules = store.use(store.currentRules)
   const loggedIn = store.use(store.loggedIn)
-  useOnMount(async function () {
+  useAsyncEffect(async function () {
     store.currentFlagId.set(flagId)
     if (_.bool(flagId) && loggedIn && _.not(currentRules.length)) {
       store.loadingMsg.set('Fetching Rules ...')
@@ -26,7 +26,7 @@ export const FlagEditorRoute: React.VFC = function () {
       store.setRules(fetchedRules)
       store.loadingMsg.set('')
     }
-  })
+  }, [])
   if (_.not(currentFlag)) {
     return <h3>No such flag with ID: <code>{flagId}</code></h3>
   }

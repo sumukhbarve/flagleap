@@ -2,7 +2,7 @@ import React from 'react'
 import { tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
 import * as store from '../store'
-import { useMountExpectsLoggedIn, useOnMount } from '../hooks'
+import { useMountExpectsLoggedIn, useAsyncEffect } from '../hooks'
 import { CreateFlagButton } from './CreateFlagButton'
 import { FlagCard } from './FlagCard'
 import { Col, Row } from 'react-bootstrap'
@@ -13,7 +13,7 @@ export const FlagListerRoute: React.VFC = function () {
   const flagList = store.use(store.searchedFlagList)
   const inapiToken = store.use(store.inapiToken)
   const loggedIn = store.use(store.loggedIn)
-  useOnMount(async function () {
+  useAsyncEffect(async function () {
     if (loggedIn && flagList.length === 0) {
       store.loadingMsg.set('Fetching Flags ...')
       const fetchedFlags = await tapiduck.fetch(api.internal.getFlags, {
@@ -22,7 +22,7 @@ export const FlagListerRoute: React.VFC = function () {
       store.setFlags(fetchedFlags)
       store.loadingMsg.set('')
     }
-  })
+  }, [])
   return (
     <div>
       <h1 className='mb-3'>Flags</h1>

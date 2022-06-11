@@ -1,24 +1,29 @@
 import React from 'react'
 import type { Lookable } from 'monoduck'
-import { roqsduck } from 'monoduck'
+import { _, roqsduck } from 'monoduck'
 import * as store from './store'
 
+type VoidFn = () => void // TODO: Import this?
+
+// The following type is written in a way that conforms with ts-standard.
+type EffectFn = VoidFn | (() => VoidFn | Promise<void> | Promise<VoidFn>)
+// It is equivalent to::
+//    () => (void | VoidFn | Promise<void | VoidFn>)
+// But @typescript-eslint/no-invalid-void-type says:
+//    If void is used as return type, it shouldn’t be a part of ... union ...
+
 const useAsyncEffect = function (
-  effect?: () => void, cleanup?: () => void, deps?: unknown[]
+  effect: EffectFn,
+  deps: unknown[] | undefined // accepts undefined, but only explicitly
 ): void {
   React.useEffect(function () {
-    effect?.()
+    const effectOut = effect()
+    const cleanupAsync = Promise.resolve(effectOut)
     return function () {
-      cleanup?.()
+      // TODO: Consider something stronger than _.noop()?
+      cleanupAsync.then(cleanupSync => cleanupSync?.()).catch(_.noop)
     }
   }, deps)
-}
-
-const useOnMount = function (fn: () => unknown): void {
-  useAsyncEffect(fn, undefined, [])
-}
-const useOnUnmount = function (fn: () => unknown): void {
-  useAsyncEffect(undefined, fn, [])
 }
 
 const makeUseMountExpectsElseRedir = function<T> (
@@ -26,11 +31,11 @@ const makeUseMountExpectsElseRedir = function<T> (
 ): () => void {
   const useMountExpectsElseRedir = function (): void {
     const val = store.use(lookable)
-    useOnMount(function () {
+    React.useEffect(function () {
       if (val !== expectedVal) {
         roqsduck.setRouteInfo({ id: redirToId })
       }
-    })
+    }, [])
   }
   return useMountExpectsElseRedir
 }
@@ -43,8 +48,7 @@ const useMountExpectsLoggedOut = makeUseMountExpectsElseRedir(
 )
 
 export {
-  useOnMount,
-  useOnUnmount,
+  useAsyncEffect,
   useMountExpectsLoggedIn,
   useMountExpectsLoggedOut
 }
