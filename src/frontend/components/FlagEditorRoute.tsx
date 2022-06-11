@@ -17,7 +17,6 @@ export const FlagEditorRoute: React.VFC = function () {
   const loggedIn = store.use(store.loggedIn)
   useOnMount(async function () {
     store.currentFlagId.set(flagId)
-    await _.sleep(0)
     if (_.bool(flagId) && loggedIn && _.not(currentRules.length)) {
       store.loadingMsg.set('Fetching Rules ...')
       const fetchedRules = await tapiduck.fetch(api.internal.getFlagRules, {

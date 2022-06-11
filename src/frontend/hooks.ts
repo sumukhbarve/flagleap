@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Lookable } from 'monoduck'
-import { _, roqsduck } from 'monoduck'
+import { roqsduck } from 'monoduck'
 import * as store from './store'
 
 const useAsyncEffect = function (
@@ -26,10 +26,9 @@ const makeUseMountExpectsElseRedir = function<T> (
 ): () => void {
   const useMountExpectsElseRedir = function (): void {
     const val = store.use(lookable)
-    useOnMount(async function () {
+    useOnMount(function () {
       if (val !== expectedVal) {
-        await _.sleep(0) // Timeout allows lookable.subscribe() to happen first
-        setTimeout(() => roqsduck.setRouteInfo({ id: redirToId }), 0)
+        roqsduck.setRouteInfo({ id: redirToId })
       }
     })
   }

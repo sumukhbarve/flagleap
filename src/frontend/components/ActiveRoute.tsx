@@ -9,10 +9,7 @@ import { roqsduck } from 'monoduck'
 
 const DefaultBlankIdRoute: React.VFC = function () {
   const defaultRouteId = store.use(store.defaultRouteId)
-  React.useEffect(function () {
-    // Timeout ensures update occurs _after_ parent(s)' subscription(s)
-    setTimeout(() => roqsduck.setRouteInfo({ id: defaultRouteId }), 0)
-  }, [])
+  React.useEffect(() => roqsduck.setRouteInfo({ id: defaultRouteId }), [])
   return (
     <div>
       <h2>Redirecting ...</h2>
@@ -43,6 +40,5 @@ const NoSuchRoute: React.VFC = function () {
 export const ActiveRoute: React.VFC = function () {
   const routeInfo = store.useRouteInfo()
   const RouteComponent = routeMap[routeInfo.id] ?? NoSuchRoute
-  console.log(routeInfo, RouteComponent)
   return <RouteComponent />
 }
