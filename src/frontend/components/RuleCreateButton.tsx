@@ -3,6 +3,7 @@ import { tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
 import * as store from '../store'
 import { Button } from 'react-bootstrap'
+import { getIdForRuleEditButton } from '../helpers'
 
 interface Props {
   flagId: string
@@ -20,6 +21,9 @@ export const RuleCreateButton: React.VFC<Props> = function (props) {
     })
     store.ruleMap.updateObjects([rule])
     store.loadingMsg.set('')
+    setTimeout(function () {
+      document.getElementById(getIdForRuleEditButton(rule.id))?.click()
+    }, 10)
   }
   return <Button onClick={onCreate}>Create Rule</Button>
 }

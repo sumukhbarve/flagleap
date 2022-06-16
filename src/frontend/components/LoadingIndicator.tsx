@@ -12,6 +12,7 @@ export const LoadingIndicator: React.VFC = function () {
     border: '1px solid black',
     borderRadius: 10,
     backgroundColor: 'lightyellow',
+    color: 'black',
     padding: 15,
     fontSize: 'large'
   } as const

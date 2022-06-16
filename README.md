@@ -4,7 +4,7 @@ Leap forward with feature flags!
 
 ### Screenshot:
 
-![Flag Lister Screenshot](/screenshots/2022-06-08-flagLister.png)
+![Flag Lister Screenshot](/screenshots/2022-06-18-flagLister.png)
 
 ### What is it?
 

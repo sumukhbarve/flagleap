@@ -38,7 +38,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         <Col md={3} className=''>
           <Form.Group>
             <Button
-              variant='light' onClick={() => {
+              variant='secondary' onClick={() => {
                 setFlagX({
                   ...flagX,
                   [modeRing.enabled]: Number(_.not(flagX[modeRing.enabled]))
@@ -80,7 +80,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         <Col md={2} className='textAlignRight'>
           <Button
             type='submit'
-            variant={saved ? 'outline-secondary' : 'primary'}
+            variant={saved ? 'secondary' : 'primary'}
             disabled={saved}
           >
             <span style={{ display: 'inline-block', minWidth: 45 }}>

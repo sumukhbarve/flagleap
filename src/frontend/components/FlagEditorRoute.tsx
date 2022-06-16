@@ -34,7 +34,7 @@ export const FlagEditorRoute: React.VFC = function () {
     <div>
       <Row>
         <Col>
-          <h1><code>{flagId}</code></h1>
+          <h3><code>{flagId}</code></h3>
         </Col>
         <Col className='alignRight'>
           <FlagDeleteButton flagId={currentFlag.id} />
@@ -43,7 +43,7 @@ export const FlagEditorRoute: React.VFC = function () {
       <div className='mb-4' />
       <FlagEditorForm flag={currentFlag} key={JSON.stringify(currentFlag)} />
       <div className='mb-4' />
-      <div style={{ borderBottom: '1px solid lightgray' }} />
+      <div style={{ borderBottom: '1px solid slategray' }} />
       <div className='mb-4' />
       <RuleLister rules={currentRules} flag={currentFlag} />
 

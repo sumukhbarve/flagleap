@@ -10,9 +10,9 @@ const Codelet: React.VFC<{str: string}> = function ({ str }) {
     display: 'inline-block',
     padding: '2px 5px',
     margin: '2px 5px',
-    border: '1px solid darkgray',
+    border: '1px solid dimgray',
     borderRadius: 5,
-    backgroundColor: 'lightgray',
+    backgroundColor: 'darkgray',
     color: 'black',
     fontFamily: 'monospace'
   } as const
@@ -21,7 +21,7 @@ const Codelet: React.VFC<{str: string}> = function ({ str }) {
 
 export const RuleCard: React.VFC<{rule: ZRule}> = function ({ rule }) {
   const style = {
-    border: '1px solid lightgray',
+    border: '1px solid slategray',
     borderRadius: 5,
     padding: 15
   } as const

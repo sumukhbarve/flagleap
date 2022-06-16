@@ -114,7 +114,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
 
       <Form.Group className='mt-4'>
         <Button type='submit' variant='primary'>Save</Button> &nbsp;
-        <Button variant='outline-secondary' onClick={close}>Cancel</Button>
+        <Button variant='secondary' onClick={close}>Cancel</Button>
       </Form.Group>
     </Form>
   )

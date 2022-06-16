@@ -51,13 +51,13 @@ export const Header: React.VFC = function () {
   const loggedIn = store.use(store.loggedIn)
   const defaultRouteId = store.use(store.defaultRouteId)
   const style = {
-    paddingBlock: 15, borderBottom: '1px solid lightgray', marginBottom: 15
+    paddingBlock: 15, borderBottom: '1px solid slategray', marginBottom: 15
   } as const
   return (
     <header style={style}>
       <Row>
         <Col>
-          <h2><Link to={{ id: defaultRouteId }}>FlagLeap</Link></h2>
+          <h3><Link to={{ id: defaultRouteId }}>FlagLeap</Link></h3>
         </Col>
         {loggedIn ? <LoggedInNavCols /> : <LoggedOutNavCols />}
       </Row>

@@ -25,7 +25,7 @@ export const FlagListerRoute: React.VFC = function () {
   }, [])
   return (
     <div>
-      <h1 className='mb-3'>Flags</h1>
+      <h2 className='mb-3'>Flags</h2>
       <Row>
         <Col>
           <FlagSearchbox />

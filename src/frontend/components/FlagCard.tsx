@@ -7,7 +7,7 @@ import { FlagEnabledToggler } from './FlagEnabledToggler'
 
 export const FlagCard: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   const style = {
-    border: '1px solid lightgray',
+    border: '1px solid slategray',
     borderRadius: 5,
     padding: 15
   } as const
