@@ -19,7 +19,7 @@ export const FlagListerRoute: React.VFC = function () {
       const fetchedFlags = await tapiduck.fetch(api.internal.getFlags, {
         inapiToken
       })
-      store.setFlags(fetchedFlags)
+      store.flagMap.updateObjects(fetchedFlags)
       store.loadingMsg.set('')
     }
   }, [])

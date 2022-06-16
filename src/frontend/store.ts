@@ -1,5 +1,4 @@
 import React from 'react'
-import type { Observable } from 'monoduck'
 import { _, lookduck, roqsduck, tapiduck } from 'monoduck'
 import type {
   ZMemberWoHpass, ZFlag, ZRule, ZFlagNotif
@@ -23,52 +22,7 @@ export const defaultRouteId = lookduck.computed(function () {
 export const mode = lookduck.observable<'live' | 'test'>('test')
 export const modeRing = lookduck.computed(() => getModeRing(mode.get()))
 
-const makeSetObjs = function <T extends {id: string}>(
-  objMap: Observable<Record<string, T>>
-): (_newObjs: T[]) => void {
-  const setObjs = function (_newObjs: T[]): void {
-    const _oldObjMap = objMap.get()
-    let _changeDetected = false
-    const _objChangeMap: Record<string, T> = {}
-    _.each(_newObjs, function (_newObj) {
-      const _oldObj = _oldObjMap[_newObj.id]
-      if (!_.deepEquals(_oldObj, _newObj)) {
-        _changeDetected = true
-        _objChangeMap[_newObj.id] = _newObj
-      }
-    })
-    if (_changeDetected) {
-      objMap.set({ ..._oldObjMap, ..._objChangeMap })
-    }
-  }
-
-  return setObjs
-}
-const makeDeleteObjsById = function <T extends {id: string}>(
-  objMap: Observable<Record<string, T>>
-): (_idsToDel: string[]) => void {
-  const deleteObjsById = function (_idsToDel: string[]): void {
-    const _idsToDelSet = new Set(_idsToDel)
-    const _oldObjMap = objMap.get()
-    const _newObjMap: (typeof _oldObjMap) = {}
-    let _deleteDetected = false
-    _.each(Object.entries(_oldObjMap), function ([id, obj]) {
-      if (_idsToDelSet.has(id)) {
-        _deleteDetected = true
-      } else {
-        _newObjMap[id] = obj
-      }
-    })
-    if (_deleteDetected) {
-      objMap.set(_newObjMap)
-    }
-  }
-  return deleteObjsById
-}
-
-export const flagMap = lookduck.observable<Record<string, ZFlag>>({})
-export const setFlags = makeSetObjs(flagMap)
-export const deleteFlagsById = makeDeleteObjsById(flagMap)
+export const flagMap = lookduck.observableIdMap<ZFlag>({})
 export const flagList = lookduck.computed(function (): ZFlag[] {
   return _.sortBy(Object.values(flagMap.get()), flag => flag.id)
 })
@@ -86,9 +40,7 @@ export const searchedFlagList = lookduck.computed(function () {
   return _.filter(_flagList, flg => flg.id.toLowerCase().includes(_searchText))
 })
 
-export const ruleMap = lookduck.observable<Record<string, ZRule>>({})
-export const setRules = makeSetObjs(ruleMap)
-export const deleteRulesById = makeDeleteObjsById(ruleMap)
+export const ruleMap = lookduck.observableIdMap<ZRule>({})
 export const ruleList = lookduck.computed(function () {
   return _.sortBy(Object.values(ruleMap.get()), rule => rule.rank)
 })

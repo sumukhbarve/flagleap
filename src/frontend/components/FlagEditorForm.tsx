@@ -28,7 +28,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         description: flagX.description
       }
     })
-    store.setFlags([updatedFlag])
+    store.flagMap.updateObjects([updatedFlag])
     store.loadingMsg.set('')
     alert('Flag saved.')
   }

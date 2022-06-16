@@ -85,6 +85,7 @@ const defaultRuleRow: ZRule = {
 // Other API-specific Models: //////////////////////////////////////////////////
 
 const zFlagReadout = z.object({
+  // TODO: add `id`, alias for `flag_id`
   flag_id: z.string(),
   enabled: z.boolean(),
   value: z.string()

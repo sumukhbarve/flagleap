@@ -14,7 +14,7 @@ export const CreateFlagButton: React.VFC = function () {
     const flag = await tapiduck.fetch(api.internal.createFlag, {
       inapiToken, flag_id: flagId
     })
-    store.setFlags([flag])
+    store.flagMap.updateObjects([flag])
     store.loadingMsg.set('')
     setShow(false)
     roqsduck.setRouteInfo({ id: 'flagEditor', flagId: flag.id })

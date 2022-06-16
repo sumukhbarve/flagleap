@@ -23,7 +23,7 @@ export const FlagEditorRoute: React.VFC = function () {
         inapiToken: store.inapiToken.get(),
         flag_id: store.currentFlagId.get()
       })
-      store.setRules(fetchedRules)
+      store.ruleMap.updateObjects(fetchedRules)
       store.loadingMsg.set('')
     }
   }, [])

@@ -18,7 +18,7 @@ export const FlagEnabledToggler: React.VFC<{flag: ZFlag}> = function ({ flag }) 
         [modeRing.enabled]: Number(_.not(flag[modeRing.enabled]))
       }
     })
-    store.setFlags([updatedFlag])
+    store.flagMap.updateObjects([updatedFlag])
     store.loadingMsg.set('')
   }
   return (

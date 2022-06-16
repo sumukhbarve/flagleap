@@ -14,8 +14,10 @@ export const FlagDeleteButton: React.VFC<{flagId: string}> = function (props) {
       flag_id: props.flagId,
       inapiToken: store.inapiToken.get()
     })
-    store.deleteFlagsById([resdata.id])
-    // TODO: Remove flag-linked rules from store?
+    const flagToPop = _.bang(store.flagMap.getById(resdata.id))
+    const rulesToPop = store.flagwiseRuleList.get()[flagToPop.id] ?? []
+    store.flagMap.popByIds([flagToPop.id])
+    store.ruleMap.popByIds(rulesToPop.map(r => r.id))
     store.loadingMsg.set('')
     roqsduck.setRouteInfo({ id: 'flagLister' })
   }

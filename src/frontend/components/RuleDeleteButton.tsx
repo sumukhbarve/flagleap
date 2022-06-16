@@ -15,7 +15,7 @@ export const RuleDeleteButton: React.VFC<{ruleId: string}> = function (props) {
       inapiToken: store.inapiToken.get()
     })
     await _.sleep(1000)
-    store.deleteRulesById([rule.id])
+    store.ruleMap.popByIds([rule.id])
     store.loadingMsg.set('')
   }
   return (

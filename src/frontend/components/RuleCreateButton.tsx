@@ -18,7 +18,7 @@ export const RuleCreateButton: React.VFC<Props> = function (props) {
       rank: newRank,
       inapiToken: store.inapiToken.get()
     })
-    store.setRules([rule])
+    store.ruleMap.updateObjects([rule])
     store.loadingMsg.set('')
   }
   return <Button onClick={onCreate}>Create Rule</Button>

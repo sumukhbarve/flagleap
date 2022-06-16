@@ -19,7 +19,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
     const updatedRule = await tapiduck.fetch(api.internal.updateRule, {
       rule: ruleX, inapiToken: store.inapiToken.get()
     })
-    store.setRules([updatedRule])
+    store.ruleMap.updateObjects([updatedRule])
     store.loadingMsg.set('')
     alert('Rule saved.')
     close()
