@@ -2,9 +2,9 @@
 
 Leap forward with feature flags!
 
-### Screenshot:
+### Quick Screenshot:
 
-![Flag Lister Screenshot](/screenshots/2022-06-18-flagLister.png)
+<img alt="FlagLeap Screenshot" src="/screenshots/2022-06-18-flagLister.png" width="540" />
 
 ### What is it?
 
