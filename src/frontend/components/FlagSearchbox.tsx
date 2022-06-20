@@ -1,5 +1,5 @@
 import React from 'react'
-import * as store from '../store'
+import { store } from '../store'
 import { Form } from 'react-bootstrap'
 
 export const FlagSearchbox: React.VFC = function () {

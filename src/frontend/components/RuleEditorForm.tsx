@@ -3,7 +3,7 @@ import { tapiduck } from 'monoduck'
 import type { ZRule } from '../../shared/z-models'
 import { zOperatorEnum } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
-import * as store from '../store'
+import { store } from '../store'
 import { Button, Form, Row, Col } from 'react-bootstrap'
 
 interface RuleEditorFormProps {

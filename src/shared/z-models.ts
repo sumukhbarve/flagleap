@@ -84,16 +84,16 @@ const defaultRuleRow: ZRule = {
 
 // Other API-specific Models: //////////////////////////////////////////////////
 
-const zFlagReadout = z.object({
-  // TODO: add `id`, alias for `flag_id`
-  flag_id: z.string(),
+// Exapi Flag Output
+const zFlagout = z.object({
+  id: z.string(),
   enabled: z.boolean(),
   value: z.string()
 })
-type ZFlagReadout = z.infer<typeof zFlagReadout>
+type ZFlagout = z.infer<typeof zFlagout>
 
-const zFlagReadoutMap = z.record(zFlagReadout)
-type ZFlagReadoutMap = z.infer<typeof zFlagReadoutMap>
+const zFlagoutMap = z.record(zFlagout)
+type ZFlagoutMap = z.infer<typeof zFlagoutMap>
 
 const zModeEnum = z.enum(['live', 'test'])
 type ZModeEnum = z.infer<typeof zModeEnum>
@@ -112,10 +112,10 @@ type ZFlagNotif = z.infer<typeof zFlagNotif>
 
 export type {
   ZMember, ZMemberWoHpass, ZFlag, ZOperatorEnum, ZRule,
-  ZFlagReadout, ZFlagReadoutMap, ZModeEnum, ZTraits, ZFlagNotif
+  ZFlagout, ZFlagoutMap, ZModeEnum, ZTraits, ZFlagNotif
 }
 export {
   zMember, defaultMemberRow, zMemberWoHpass, zFlag, defaultFlagRow,
-  zOperatorEnum, zRule, defaultRuleRow, zFlagReadout, zFlagReadoutMap,
+  zOperatorEnum, zRule, defaultRuleRow, zFlagout, zFlagoutMap,
   zModeEnum, zTraits, zFlagNotif
 }

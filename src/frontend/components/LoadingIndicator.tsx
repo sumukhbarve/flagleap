@@ -1,5 +1,5 @@
 import React from 'react'
-import * as store from '../store'
+import { store } from '../store'
 import { Spinner } from 'react-bootstrap'
 import { _ } from 'monoduck'
 

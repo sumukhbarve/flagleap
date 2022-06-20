@@ -2,9 +2,13 @@
 
 Leap forward with feature flags!
 
-### Quick Screenshot:
+### Quick Screenshots:
 
-<img alt="FlagLeap Screenshot" src="/screenshots/2022-06-18-flagLister.png" width="540" />
+| List of Flags | Flag-Specific Rules |
+| --- | --- |
+| <img alt="FlagLeap: List of Flags" src="/screenshots/2022-06-18-flagLister.png" width="450" /> | <img alt="FlagLeap: Flag-Specific Rules" src="/screenshots/2022-06-20-flagEditor.png" width="450" /> |
+
+
 
 ### What is it?
 

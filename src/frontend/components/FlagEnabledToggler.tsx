@@ -2,7 +2,7 @@ import { tapiduck, _ } from 'monoduck'
 import React from 'react'
 import { Form } from 'react-bootstrap'
 import type { ZFlag } from '../../shared/z-models'
-import * as store from '../store'
+import { store } from '../store'
 import { api } from '../../shared/endpoints'
 
 export const FlagEnabledToggler: React.VFC<{flag: ZFlag}> = function ({ flag }) {

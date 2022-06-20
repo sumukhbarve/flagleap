@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Lookable } from 'monoduck'
 import { _, roqsduck } from 'monoduck'
-import * as store from './store'
+import { store } from './store'
 
 type VoidFn = () => void // TODO: Import this?
 

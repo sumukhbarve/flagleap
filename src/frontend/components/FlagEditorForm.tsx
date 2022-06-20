@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { _, tapiduck } from 'monoduck'
-import * as store from '../store'
+import { store } from '../store'
 import type { ZFlag } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 

@@ -7,66 +7,77 @@ import { getModeRing } from '../shared/helpers'
 import { io } from 'socket.io-client'
 import { api } from '../shared/endpoints'
 
-export const loadingMsg = lookduck.observable('')
+// Using a function-based namespace to pacify @typescript-eslint/no-namespace
+const store = (_: never): never => { throw new Error('never') }
 
-export const me = lookduck.observable<ZMemberWoHpass | null>(null)
-export const inapiToken = lookduck.observable('')
-export const loggedIn = lookduck.computed(function () {
-  return _.bool(me.get()) && _.bool(inapiToken.get())
-})
-export const loggedOut = lookduck.computed(() => _.not(loggedIn.get()))
-export const defaultRouteId = lookduck.computed(function () {
-  return loggedOut.get() ? 'login' : 'flagLister'
-})
+store.loadingMsg = lookduck.observable('')
 
-export const mode = lookduck.observable<'live' | 'test'>('test')
-export const modeRing = lookduck.computed(() => getModeRing(mode.get()))
-
-export const flagMap = lookduck.observableIdMap<ZFlag>({})
-export const flagList = lookduck.computed(function (): ZFlag[] {
-  return _.sortBy(Object.values(flagMap.get()), flag => flag.id)
+store.me = lookduck.observable<ZMemberWoHpass | null>(null)
+store.inapiToken = lookduck.observable('')
+store.loggedIn = lookduck.computed(function () {
+  return _.bool(store.me.get()) && _.bool(store.inapiToken.get())
 })
-export const currentFlagId = lookduck.observable('')
-export const currentFlag = lookduck.computed(function (): ZFlag | null {
-  const _flagId = currentFlagId.get()
-  const _flagMap = flagMap.get()
-  return _flagMap[_flagId] ?? null
-})
-export const flagSearchText = lookduck.observable('')
-export const searchedFlagList = lookduck.computed(function () {
-  const _searchText = flagSearchText.get().trim().toLowerCase()
-  const _flagList = flagList.get()
-  if (_searchText === '') { return _flagList }
-  return _.filter(_flagList, flg => flg.id.toLowerCase().includes(_searchText))
+store.loggedOut = lookduck.computed(() => _.not(store.loggedIn.get()))
+store.defaultRouteId = lookduck.computed(function () {
+  return store.loggedOut.get() ? 'login' : 'flagLister'
 })
 
-export const ruleMap = lookduck.observableIdMap<ZRule>({})
-export const ruleList = lookduck.computed(function () {
-  return _.sortBy(Object.values(ruleMap.get()), rule => rule.rank)
+store.mode = lookduck.observable<'live' | 'test'>('test')
+store.modeRing = lookduck.computed(() => getModeRing(store.mode.get()))
+
+store.flagMap = lookduck.observableIdMap<ZFlag>({})
+store.flagList = lookduck.computed(function (): ZFlag[] {
+  return _.sortBy(Object.values(store.flagMap.get()), flag => flag.id)
+})
+store.currentFlagId = lookduck.observable('')
+store.currentFlag = lookduck.computed(function (): ZFlag | null {
+  const flagId = store.currentFlagId.get()
+  const flagMap = store.flagMap.get()
+  return flagMap[flagId] ?? null
+})
+store.flagSearchText = lookduck.observable('')
+store.searchedFlagList = lookduck.computed(function () {
+  const searchText = store.flagSearchText.get().trim().toLowerCase()
+  const flagList = store.flagList.get()
+  if (searchText === '') { return flagList }
+  return _.filter(flagList, flag => flag.id.toLowerCase().includes(searchText))
+})
+
+store.ruleMap = lookduck.observableIdMap<ZRule>({})
+store.ruleList = lookduck.computed(function () {
+  return _.sortBy(Object.values(store.ruleMap.get()), rule => rule.rank)
 })
 
 // NB: ids of rulesless flags aren't included in flagwiseRuleList..
-export const flagwiseRuleList = lookduck.computed(function () {
-  const _ruleList = ruleList.get()
-  return _.groupBy(_ruleList, rule => rule.flag_id)
+store.flagwiseRuleList = lookduck.computed(function () {
+  const ruleList = store.ruleList.get()
+  return _.groupBy(ruleList, rule => rule.flag_id)
 })
-export const currentRules = lookduck.computed(function (): ZRule[] {
-  const _flagId = currentFlagId.get()
-  const _modeRing = modeRing.get()
-  const _flagwiseRules = flagwiseRuleList.get()
-  if (_.not(_flagId)) { return [] }
-  const _rules = _flagwiseRules[_flagId]
-  if (_.not(_rules)) { return [] }
-  return _rules.filter(r => r[_modeRing.exists])
+store.currentRules = lookduck.computed(function (): ZRule[] {
+  const flagId = store.currentFlagId.get()
+  const modeRing = store.modeRing.get()
+  const flagwiseRules = store.flagwiseRuleList.get()
+  if (_.not(flagId)) { return [] }
+  const rules = flagwiseRules[flagId]
+  if (_.not(rules)) { return [] }
+  return rules.filter(rule => rule[modeRing.exists])
 })
+
+// Flag notifs:
+store.flagNotifs = lookduck.observable<ZFlagNotif[]>([])
 
 // Hooks/Components: ///////////////////////////////////////////////////////////
-export const use = lookduck.makeUseLookable(React)
-export const { useRouteInfo, Link: RoqsLink } = roqsduck.injectReact(React)
+store.use = lookduck.makeUseLookable(React)
+const { useRouteInfo, Link: RoqsLink } = roqsduck.injectReact(React)
+store.useRouteInfo = useRouteInfo
+store.RoqsLink = RoqsLink
 
 // Socket Related: /////////////////////////////////////////////////////////////
-const socket = io()
-export const flagNotifs = lookduck.observable<ZFlagNotif[]>([])
+const socket = io({ transports: ['websocket'] })
 tapiduck.sockOn(socket, api.external.sock.flagNotifFromServer, function (data) {
-  flagNotifs.set([data, ...flagNotifs.get()])
+  store.flagNotifs.set([data, ...store.flagNotifs.get()])
 })
+
+// Export:
+const nonCallableStore = { ...store }
+export { nonCallableStore as store }

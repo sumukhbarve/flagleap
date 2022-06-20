@@ -1,5 +1,5 @@
 import React from 'react'
-import * as store from '../store'
+import { store } from '../store'
 import { SetupRoute } from './SetupRoute'
 import { LoginRoute } from './LoginRoute'
 import { FlagListerRoute } from './FlagListerRoute'

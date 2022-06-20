@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { AuthWall } from './AuthWall'
 import { _, roqsduck, tapiduck } from 'monoduck'
-import * as store from '../store'
+import { store } from '../store'
 import { api } from '../../shared/endpoints'
 import { useMountExpectsLoggedOut } from '../hooks'
 

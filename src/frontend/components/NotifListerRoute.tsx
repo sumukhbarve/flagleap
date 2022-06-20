@@ -1,5 +1,5 @@
 import React from 'react'
-import * as store from '../store'
+import { store } from '../store'
 
 export const NotifListerRoute: React.VFC = function () {
   const flagNotifs = store.use(store.flagNotifs)

@@ -1,6 +1,6 @@
 import React from 'react'
 import { _, tapiduck } from 'monoduck'
-import * as store from '../store'
+import { store } from '../store'
 import { useMountExpectsLoggedIn, useAsyncEffect } from '../hooks'
 import { FlagEditorForm } from './FlagEditorForm'
 import { api } from '../../shared/endpoints'

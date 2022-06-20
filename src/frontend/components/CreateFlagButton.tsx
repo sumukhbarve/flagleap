@@ -1,7 +1,7 @@
 import React from 'react'
 import { roqsduck, tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
-import * as store from '../store'
+import { store } from '../store'
 import { Button, Modal, Form } from 'react-bootstrap'
 
 export const CreateFlagButton: React.VFC = function () {

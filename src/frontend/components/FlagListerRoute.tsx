@@ -1,7 +1,7 @@
 import React from 'react'
 import { tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
-import * as store from '../store'
+import { store } from '../store'
 import { useMountExpectsLoggedIn, useAsyncEffect } from '../hooks'
 import { CreateFlagButton } from './CreateFlagButton'
 import { FlagCard } from './FlagCard'

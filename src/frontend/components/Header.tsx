@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from './Link'
-import * as store from '../store'
+import { store } from '../store'
 import { Row, Col, Button } from 'react-bootstrap'
 
 const ModeToggleButton: React.VFC = function () {
