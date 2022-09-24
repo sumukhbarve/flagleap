@@ -15,8 +15,9 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
       flagX[modeRing.enabled] === flag[modeRing.enabled]
     ])
   }
-  const [saved, setSaved] = React.useState(computeSaved())
-  React.useEffect(() => setSaved(computeSaved())) // On every render
+  const [isSaved, setIsSaved] = React.useState(computeSaved())
+  React.useEffect(() => setIsSaved(computeSaved())) // On every render
+  const isSaving = store.use(store.loadingMsg) !== ''
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.loadingMsg.set('Saving Flag ...')
@@ -30,7 +31,6 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
     })
     store.flagMap.updateObjects([updatedFlag])
     store.loadingMsg.set('')
-    alert('Flag saved.')
   }
   return (
     <Form onSubmit={onSubmit}>
@@ -80,11 +80,11 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         <Col md={2} className='textAlignRight'>
           <Button
             type='submit'
-            variant={saved ? 'secondary' : 'primary'}
-            disabled={saved}
+            variant={isSaved ? 'secondary' : 'primary'}
+            disabled={isSaved || isSaving}
           >
             <span style={{ display: 'inline-block', minWidth: 45 }}>
-              Save{saved ? 'd' : ''}
+              {isSaved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
             </span>
           </Button>
         </Col>

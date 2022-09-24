@@ -18,7 +18,7 @@
     "watch": "echo 'Please run watch-client or watch-server'",
     "build": "rm -rf dist && npm run build-server && rm -rf dist/frontend && npm run build-client",
     "prepack": "npm run lint && npm run test && npm run build",
-    "start": "node dist/backend/server.js"
+    "start": "NODE_ENV=production node dist/backend/server.js"
   },
   "repository": {
     "type": "git",

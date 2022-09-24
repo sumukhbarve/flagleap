@@ -6,7 +6,7 @@ import { _ } from 'monoduck'
 export const LoadingIndicator: React.VFC = function () {
   const loadingMsg = store.use(store.loadingMsg)
   const divStyle = {
-    position: 'fixed', top: 70, left: 0, width: '100%', textAlign: 'center'
+    position: 'fixed', top: 70, left: 0, width: '100%', textAlign: 'center', zIndex: 1100
   } as const
   const spanStyle = {
     border: '1px solid black',

@@ -1,12 +1,11 @@
 import path from 'path'
 import process from 'process'
-import { _ } from 'monoduck'
 
-const repoDir = path.resolve(__dirname, '../..')
-const repoRel = (relPath: string): string => path.resolve(repoDir, relPath)
+const REPO_DIR = path.resolve(__dirname, '../..')
+const repoRel = (relPath: string): string => path.resolve(REPO_DIR, relPath)
 
 const getenv = function (varname: string, fallback = '', warn = true): string {
-  if (warn && !_.keyHas(process.env, varname)) {
+  if (warn && !Object.prototype.hasOwnProperty.call(process.env, varname)) {
     console.warn(`Warning:: ${varname} not set; falling back to: '${fallback}'`)
   }
   return process.env[varname] ?? fallback
@@ -14,12 +13,14 @@ const getenv = function (varname: string, fallback = '', warn = true): string {
 
 export const config = {
   // Dir:
-  repoDir,
-  srcDir: repoRel('src'),
-  distDir: repoRel('dist'),
-  distFrontendDir: repoRel('dist/frontend'),
+  REPO_DIR: REPO_DIR,
+  SRC_DIR: repoRel('src'),
+  DIST_DIR: repoRel('dist'),
+  DIST_FRONTEND_DIR: repoRel('dist/frontend'),
   // Env:
+  IS_PROD: getenv('NODE_ENV', 'development') === 'production',
   PORT: Number(getenv('PORT', '3000', false)),
   DATABASE_URL: getenv('DATABASE_URL', `sqlite:${repoRel('local-sqlite.db')}`),
-  SECRET_KEY: getenv('SECRET_KEY', 'not-really-a-secret--just-the-fallback')
-}
+  SECRET_KEY: getenv('SECRET_KEY', 'not-really-a-secret--just-the-fallback'),
+  EXTRA_LATENCY: Number(getenv('EXTRA_LATENCY', '0', false))
+} as const

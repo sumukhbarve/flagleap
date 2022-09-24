@@ -13,15 +13,16 @@ interface RuleEditorFormProps {
 export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
   const { rule, close } = props
   const [ruleX, setRuleX] = React.useState({ ...rule })
+  const isSaving = store.use(store.loadingMsg) !== ''
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
+    if (isSaving) { return undefined }
     store.loadingMsg.set('Saving Rule ...')
     const updatedRule = await tapiduck.fetch(api.internal.updateRule, {
       rule: ruleX, inapiToken: store.inapiToken.get()
     })
     store.ruleMap.updateObjects([updatedRule])
     store.loadingMsg.set('')
-    alert('Rule saved.')
     close()
   }
   const setPropX = function (k: keyof ZRule, v: ZRule[typeof k]): void {
@@ -36,6 +37,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             type='number'
             value={ruleX.rank} min={0} step={1}
             onChange={evt => setPropX('rank', Number(evt.target.value))}
+            disabled={isSaving}
           />
           <Form.Text>Rank</Form.Text>
         </Col>
@@ -45,6 +47,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             type='text' placeholder='Description ...'
             value={ruleX.description}
             onChange={evt => setPropX('description', evt.target.value)}
+            disabled={isSaving}
           />
           <Form.Text>Description</Form.Text>
         </Col>
@@ -57,6 +60,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
           <Form.Select
             value={ruleX.negated}
             onChange={evt => setPropX('negated', Number(evt.target.value))}
+            disabled={isSaving}
           >
             <option value={0}>If</option>
             <option value={1}>If not</option>
@@ -69,6 +73,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             type='text' placeholder='trait key (eg. user_id)'
             value={ruleX.lhs_operand_key}
             onChange={evt => setPropX('lhs_operand_key', evt.target.value)}
+            disabled={isSaving}
           />
           <Form.Text>trait key, eg: <i>user_id</i></Form.Text>
         </Col>
@@ -79,6 +84,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             onChange={function (evt) {
               setPropX('operator', zOperatorEnum.parse(evt.target.value))
             }}
+            disabled={isSaving}
           >
             {zOperatorEnum.options.map(
               op => <option value={op} key={op}>{op}</option>
@@ -94,6 +100,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             onChange={function (evt) {
               setRuleX({ ...ruleX, rhs_operand_value: evt.target.value })
             }}
+            disabled={isSaving}
           />
           <Form.Text>operand value, eg: <i>123</i></Form.Text>
         </Col>
@@ -107,13 +114,16 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
             type='text'
             value={ruleX.result_value}
             onChange={evt => setPropX('result_value', evt.target.value)}
+            disabled={isSaving}
           />
           <Form.Text>result value, served when condition is satisfied</Form.Text>
         </Col>
       </Row>
 
       <Form.Group className='mt-4'>
-        <Button type='submit' variant='primary'>Save</Button> &nbsp;
+        <Button type='submit' variant='primary' disabled={isSaving}>
+          {!isSaving ? 'Save' : 'Saving ...'}
+        </Button> &nbsp;
         <Button variant='secondary' onClick={close}>Cancel</Button>
       </Form.Group>
     </Form>

@@ -32,7 +32,6 @@ export const SetupRoute: React.VFC = function () {
             type='text' placeholder='First Name' required
             value={fname} onChange={e => setFname(e.currentTarget.value)}
           />
-          {fname}
         </Form.Group>
 
         <Form.Group className='mb-3'>
