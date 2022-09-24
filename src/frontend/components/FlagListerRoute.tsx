@@ -15,12 +15,12 @@ export const FlagListerRoute: React.VFC = function () {
   const loggedIn = store.use(store.loggedIn)
   useAsyncEffect(async function () {
     if (loggedIn && flagList.length === 0) {
-      store.loadingMsg.set('Fetching Flags ...')
+      store.spinnerText.set('Fetching Flags ...')
       const fetchedFlags = await tapiduck.fetch(api.internal.getFlags, {
         inapiToken
       })
       store.flagMap.updateObjects(fetchedFlags)
-      store.loadingMsg.set('')
+      store.spinnerText.set('')
     }
   }, [])
   return (

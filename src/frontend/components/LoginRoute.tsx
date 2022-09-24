@@ -14,11 +14,11 @@ export const LoginRoute: React.VFC = function () {
   const [pw, setPw] = React.useState('')
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
-    store.loadingMsg.set('Logging in ...')
+    store.spinnerText.set('Logging in ...')
     const { inapiToken, member } = await tapiduck.fetch(api.internal.login, {
       email, password: pw
     })
-    store.loadingMsg.set('')
+    store.spinnerText.set('')
     store.inapiToken.set(inapiToken)
     store.me.set(member)
     roqsduck.setRouteInfo({ id: 'flagLister' })

@@ -17,10 +17,10 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   }
   const [isSaved, setIsSaved] = React.useState(computeSaved())
   React.useEffect(() => setIsSaved(computeSaved())) // On every render
-  const isSaving = store.use(store.loadingMsg) !== ''
+  const isSaving = store.use(store.spinnerText) !== ''
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
-    store.loadingMsg.set('Saving Flag ...')
+    store.spinnerText.set('Saving Flag ...')
     const updatedFlag = await tapiduck.fetch(api.internal.updateFlag, {
       inapiToken: store.inapiToken.get(),
       flag: {
@@ -30,7 +30,7 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
       }
     })
     store.flagMap.updateObjects([updatedFlag])
-    store.loadingMsg.set('')
+    store.spinnerText.set('')
   }
   return (
     <Form onSubmit={onSubmit}>

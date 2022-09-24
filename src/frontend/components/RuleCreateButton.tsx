@@ -12,7 +12,7 @@ interface Props {
 export const RuleCreateButton: React.VFC<Props> = function (props) {
   const { flagId, newRank } = props
   const onCreate = async function (): Promise<void> {
-    store.loadingMsg.set('Creating Rule ...')
+    store.spinnerText.set('Creating Rule ...')
     const rule = await tapiduck.fetch(api.internal.createRule, {
       flag_id: flagId,
       mode: store.mode.get(),
@@ -20,7 +20,7 @@ export const RuleCreateButton: React.VFC<Props> = function (props) {
       inapiToken: store.inapiToken.get()
     })
     store.ruleMap.updateObjects([rule])
-    store.loadingMsg.set('')
+    store.spinnerText.set('')
     setTimeout(function () {
       document.getElementById(getIdForRuleEditButton(rule.id))?.click()
     }, 10)

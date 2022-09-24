@@ -9,13 +9,13 @@ export const RuleDeleteButton: React.VFC<{ruleId: string}> = function (props) {
     if (_.not(window.confirm('Are you sure?'))) {
       return undefined
     }
-    store.loadingMsg.set('Deleting Rule ...')
+    store.spinnerText.set('Deleting Rule ...')
     const rule = await tapiduck.fetch(api.internal.deleteRule, {
       rule_id: props.ruleId,
       inapiToken: store.inapiToken.get()
     })
     store.ruleMap.popByIds([rule.id])
-    store.loadingMsg.set('')
+    store.spinnerText.set('')
   }
   return (
     <Button size='sm' variant='link' onClick={onDelete}>

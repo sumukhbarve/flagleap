@@ -9,7 +9,7 @@ export const FlagDeleteButton: React.VFC<{flagId: string}> = function (props) {
     if (_.not(window.confirm('Are you sure?'))) {
       return undefined
     }
-    store.loadingMsg.set('Deleting Flag ...')
+    store.spinnerText.set('Deleting Flag ...')
     const resdata = await tapiduck.fetch(api.internal.deleteFlag, {
       flag_id: props.flagId,
       inapiToken: store.inapiToken.get()
@@ -18,7 +18,7 @@ export const FlagDeleteButton: React.VFC<{flagId: string}> = function (props) {
     const rulesToPop = store.flagwiseRuleList.get()[flagToPop.id] ?? []
     store.flagMap.popByIds([flagToPop.id])
     store.ruleMap.popByIds(rulesToPop.map(r => r.id))
-    store.loadingMsg.set('')
+    store.spinnerText.set('')
     roqsduck.setRouteInfo({ id: 'flagLister' })
   }
   return (

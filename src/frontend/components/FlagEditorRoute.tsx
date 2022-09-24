@@ -18,13 +18,13 @@ export const FlagEditorRoute: React.VFC = function () {
   useAsyncEffect(async function () {
     store.currentFlagId.set(flagId)
     if (_.bool(flagId) && loggedIn && _.not(currentRules.length)) {
-      store.loadingMsg.set('Fetching Rules ...')
+      store.spinnerText.set('Fetching Rules ...')
       const fetchedRules = await tapiduck.fetch(api.internal.getFlagRules, {
         inapiToken: store.inapiToken.get(),
         flag_id: store.currentFlagId.get()
       })
       store.ruleMap.updateObjects(fetchedRules)
-      store.loadingMsg.set('')
+      store.spinnerText.set('')
     }
   }, [])
   if (_.not(currentFlag)) {

@@ -3,8 +3,8 @@ import { store } from '../store'
 import { Spinner } from 'react-bootstrap'
 import { _ } from 'monoduck'
 
-export const LoadingIndicator: React.VFC = function () {
-  const loadingMsg = store.use(store.loadingMsg)
+export const SpinnerIndicator: React.VFC = function () {
+  const spinnerText = store.use(store.spinnerText)
   const divStyle = {
     position: 'fixed', top: 70, left: 0, width: '100%', textAlign: 'center', zIndex: 1100
   } as const
@@ -16,14 +16,14 @@ export const LoadingIndicator: React.VFC = function () {
     padding: 15,
     fontSize: 'large'
   } as const
-  if (_.not(loadingMsg)) {
+  if (_.not(spinnerText)) {
     return null
   }
   return (
     <div style={divStyle}>
       <span style={spanStyle}>
         <Spinner animation='border' role='status' size='sm' />{' '}&nbsp;
-        {loadingMsg}
+        {spinnerText}
       </span>
     </div>
   )

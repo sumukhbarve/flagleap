@@ -10,7 +10,8 @@ import { api } from '../shared/endpoints'
 // Using a function-based namespace to pacify @typescript-eslint/no-namespace
 const store = (_: never): never => { throw new Error('never') }
 
-store.loadingMsg = lookduck.observable('')
+store.spinnerText = lookduck.observable('')
+store.isSpinning = lookduck.computed(() => store.spinnerText.get() !== '')
 
 store.me = lookduck.observable<ZMemberWoHpass | null>(null)
 store.inapiToken = lookduck.observable('')

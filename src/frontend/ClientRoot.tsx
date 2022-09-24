@@ -6,12 +6,12 @@ import ReactDOM from 'react-dom'
 import { ActiveRoute } from './components/ActiveRoute'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
-import { LoadingIndicator } from './components/LoadingIndicator'
+import { SpinnerIndicator } from './components/SpinnerIndicator'
 
 const ClientRoot: React.VFC = function () {
   return (
     <div className='container clientRoot'>
-      <LoadingIndicator />
+      <SpinnerIndicator />
       <Header />
       <ActiveRoute />
       <Footer />

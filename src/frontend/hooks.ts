@@ -43,8 +43,17 @@ const useMountExpectsLoggedOut = makeUseMountExpectsElseRedir(
   store.loggedIn, false, 'flagLister'
 )
 
+const useMountedRef = function (): React.MutableRefObject<boolean> {
+  const mountedRef = React.useRef(true)
+  React.useEffect(function () {
+    return () => { mountedRef.current = false } // cleanup fn
+  }, [])
+  return mountedRef
+}
+
 export {
   useAsyncEffect,
   useMountExpectsLoggedIn,
-  useMountExpectsLoggedOut
+  useMountExpectsLoggedOut,
+  useMountedRef
 }

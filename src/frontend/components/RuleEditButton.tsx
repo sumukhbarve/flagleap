@@ -3,10 +3,16 @@ import type { ZRule } from '../../shared/z-models'
 import { Button, Modal } from 'react-bootstrap'
 import { RuleEditorForm } from './RuleEditorForm'
 import { getIdForRuleEditButton } from '../helpers'
+import { useMountedRef } from '../hooks'
 
 export const RuleEditButton: React.VFC<{rule: ZRule}> = function ({ rule }) {
   const [show, setShow] = React.useState(false)
-  const onHide = (): void => setShow(false)
+  const mountedRef = useMountedRef()
+  const onHide = React.useCallback(function () {
+    if (mountedRef.current) {
+      setShow(false)
+    }
+  }, [mountedRef, setShow])
   return (
     <>
       <Button
