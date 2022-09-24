@@ -7,6 +7,7 @@ import { FlagEditorRoute } from './FlagEditorRoute'
 import { Link } from './Link'
 import { roqsduck } from 'monoduck'
 import { NotifListerRoute } from './NotifListerRoute'
+import { TodoExampleRoute } from '../examples/TodoExampleRoute'
 
 const DefaultBlankIdRoute: React.VFC = function () {
   const defaultRouteId = store.use(store.defaultRouteId)
@@ -29,7 +30,8 @@ const routeMap: Record<string, React.VFC> = {
   flagLister: FlagListerRoute,
   flagEditor: FlagEditorRoute,
   notifLister: NotifListerRoute,
-  '': DefaultBlankIdRoute
+  '': DefaultBlankIdRoute,
+  todoExample: TodoExampleRoute
 }
 const NoSuchRoute: React.VFC = function () {
   return (
@@ -41,6 +43,7 @@ const NoSuchRoute: React.VFC = function () {
 }
 export const ActiveRoute: React.VFC = function () {
   const routeInfo = store.useRouteInfo()
+  console.log(routeInfo.id)
   const RouteComponent = routeMap[routeInfo.id] ?? NoSuchRoute
   return <RouteComponent />
 }
