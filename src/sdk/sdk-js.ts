@@ -1,32 +1,75 @@
 import { api } from '../shared/endpoints'
 import { ZTraits, ZModeEnum, ZFlagout, ZFlagoutMap } from '../shared/z-models'
+import type { VoidFn } from 'monoduck'
 import { _, tapiduck } from 'monoduck'
 
+const injectIsomorphicFetch = tapiduck.injectIsomorphicFetch
+
+interface FlagleapClientOptions {
+  instanceUrl: string
+  mode: ZModeEnum
+  ttl?: number
+  traits?: ZTraits
+}
+
+type FlagleapLoadingPhase = 'before' | 'during' | 'after'
+
 interface FlagleapClient {
-  init: () => Promise<void>
+  getLoadingPhase: () => FlagleapLoadingPhase
   reset: () => void
+  enforceTTL: () => void
+  getTTL: () => number | undefined
+  loadFlags: () => Promise<void>
   setTraits: (newTraits: ZTraits) => void
   getFlag: (flagId: string) => Promise<ZFlagout>
+  subscribe: (fn: VoidFn) => void
+  // setSingleFlagTTL: (ttl: number) => void
+  // loadSingleFlag: (flagId: string) => Promise<ZFlagout>
 }
 
 const buildFlagleapClient = function (
-  serverUrl: string,
-  mode: ZModeEnum = 'test',
-  traits: ZTraits = {}
+  opt: FlagleapClientOptions
 ): FlagleapClient {
-  const tapiFetch = tapiduck.fetchUsing(serverUrl)
+  const { instanceUrl, mode, ttl } = opt
+  let traits = opt.traits ?? {}
 
   let flagoutMap: ZFlagoutMap = {}
-  let initDone = false
-  const reset = function (): void {
-    flagoutMap = {}
-    initDone = false
+  let flagoutMapLoadedAt = 0
+  let loadingPhase: FlagleapLoadingPhase = 'before'
+  const subscribers = new Set<VoidFn>()
+  const subscribe = function (fn: VoidFn): VoidFn {
+    subscribers.add(fn)
+    return () => subscribers.delete(fn)
   }
+  const getLoadingPhase = (): FlagleapLoadingPhase => loadingPhase
+  const reset = function (): void {
+    // flagoutMap = {} // <-- Don't do this, as it'll flick trues to falses
+    flagoutMapLoadedAt = 0
+    loadingPhase = 'before'
+  }
+  const enforceTTL = function (): void {
+    // If TTL is undefined, then cache forever
+    if (ttl === undefined) {
+      return
+    }
+    if (loadingPhase === 'after' && Date.now() - flagoutMapLoadedAt > ttl) {
+      reset()
+      subscribers.forEach(fn => fn())
+    }
+  }
+  if (ttl !== undefined) {
+    setInterval(enforceTTL, ttl)
+  }
+  const getTTL = (): number => ttl
 
-  const init = async function (): Promise<void> {
-    if (!initDone) {
+  const tapiFetch = tapiduck.fetchUsing(instanceUrl)
+  const loadFlags = async function (): Promise<void> {
+    if (loadingPhase === 'before') {
+      loadingPhase = 'during'
       flagoutMap = await tapiFetch(api.external.evalFlags, { mode, traits })
-      initDone = true
+      flagoutMapLoadedAt = Date.now()
+      loadingPhase = 'after'
+      subscribers.forEach(fn => fn())
     }
   }
 
@@ -38,7 +81,8 @@ const buildFlagleapClient = function (
   }
 
   const getFlag = async function (flagId: string): Promise<ZFlagout> {
-    await init()
+    enforceTTL()
+    await loadFlags()
     if (flagoutMap[flagId] === undefined) {
       flagoutMap[flagId] = {
         id: flagId,
@@ -50,9 +94,16 @@ const buildFlagleapClient = function (
   }
 
   return {
-    init, reset, setTraits, getFlag
+    getLoadingPhase,
+    reset,
+    enforceTTL,
+    getTTL,
+    loadFlags,
+    setTraits,
+    getFlag,
+    subscribe
   }
 }
 
-export type { FlagleapClient }
-export { buildFlagleapClient }
+export type { FlagleapClientOptions, FlagleapLoadingPhase, FlagleapClient }
+export { injectIsomorphicFetch, buildFlagleapClient }

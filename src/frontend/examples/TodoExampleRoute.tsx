@@ -7,8 +7,11 @@ import { makeUseFlag } from '../../sdk/sdk-react'
 // Setup Flagleap: /////////////////////////////////////////////////////////////
 /// /////////////////////////////////////////////////////////////////////////////
 
-const flagleapClient = buildFlagleapClient('http://localhost:3000', 'test')
-const useFlag = makeUseFlag(flagleapClient)
+const flagleapClient = buildFlagleapClient({
+  instanceUrl: 'http://localhost:3000',
+  mode: 'test',
+})
+const useFlag = makeUseFlag(flagleapClient, React)
 
 /// /////////////////////////////////////////////////////////////////////////////
 // State Management: ///////////////////////////////////////////////////////////
@@ -26,9 +29,19 @@ interface TodoAppState {
   editText: (todoId: number) => void
 }
 
+const SEED_TODOS = [
+  'Buy almond milk',
+  'Pick clothes from the laundry',
+  'Feed the cat',
+  'Renew that other subscription',
+  'Get the car serviced'
+]
+
 const useCreateTodoAppState = function (): TodoAppState {
   const [showDone, setShowDone] = React.useState(true)
-  const [todos, setTodos] = React.useState<Todo[]>([])
+  const [todos, setTodos] = React.useState<Todo[]>(SEED_TODOS.map(function (s) {
+    return { id: Date.now() + Math.random(), text: s, done: false }
+  }))
   const shownTodos = showDone ? todos : todos.filter(todo => !todo.done)
 
   const toggleTodo = React.useCallback(function (id: number) {
@@ -78,11 +91,12 @@ const TopAlert: React.VFC = function () {
   return (
     <div>
       <Alert variant='primary'>
-        Below is an example Todo App app that uses 2 feature flags,
+        This example Todo App uses two feature flags from
+        {' '}<i>this</i> instance of FlagLeap, namely
         {' '}<kbd>todoExample_hideCompleted</kbd> and
-        {' '}<kbd>todoExample_editTodo</kbd>, from this instance of FlagLeap.
+        {' '}<kbd>todoExample_editTodo</kbd>.
         {' '}If those flags aren't created, it is like they're turned off.
-        To see the flags in action, create them, enable them, and refresh!
+        {' '}To see the flags in action, create them, enable them, and refresh!
       </Alert>
       <hr />
     </div>
@@ -91,10 +105,11 @@ const TopAlert: React.VFC = function () {
 
 const Header: React.VFC = function () {
   const { showDone, setShowDone } = useGetTodoAppState()
-  const allowHideCompleted = useFlag('todoExample_hideCompleted').enabled
+  const flag = (useFlag('todoExample_hideCompleted'))
+  const allowHideCompleted = flag.enabled
   return (
     <header>
-      <h4>Todo App</h4>
+      <h4>Todo App <small>(Example)</small></h4>
       {allowHideCompleted && <Form.Check
         id='checkbox-hide-completed'
         label='Hide Completed'
@@ -110,7 +125,7 @@ const Header: React.VFC = function () {
 const SingleTodo: React.VFC<{todo: Todo}> = function ({ todo }) {
   const { toggleTodo, editText } = useGetTodoAppState()
   const labelStyle = { textDecoration: todo.done ? 'line-through' : 'initial' }
-  const allowEditing = useFlag('todoExample_editTodo').enabled
+  const { enabled: allowEditing } = useFlag('todoExample_editTodo')
   const anchorStyle = { display: 'inline-block', marginLeft: 8, fontSize: '75%' }
   return (
     <div className='mb-3'>
