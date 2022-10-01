@@ -60,7 +60,7 @@ const buildFlagleapClient = function (
   if (ttl !== undefined) {
     setInterval(enforceTTL, ttl)
   }
-  const getTTL = (): number => ttl
+  const getTTL = (): number | undefined => ttl
 
   const tapiFetch = tapiduck.fetchUsing(instanceUrl)
   const loadFlags = async function (): Promise<void> {

@@ -9,7 +9,7 @@ import { makeUseFlag } from '../../sdk/sdk-react'
 
 const flagleapClient = buildFlagleapClient({
   instanceUrl: 'http://localhost:3000',
-  mode: 'test',
+  mode: 'test'
 })
 const useFlag = makeUseFlag(flagleapClient, React)
 
