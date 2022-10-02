@@ -1,14 +1,14 @@
 import React from 'react'
 import {
-  _, lookduck, roqsduck, tapiduck, injectReact as monoduckInjectReact
+  _, lookduck, roqsduck, injectReact as monoduckInjectReact // tapiduck
 } from 'monoduck'
 import type {
   ZMemberWoHpass, ZFlag, ZRule, ZFlagNotif
 } from '../shared/z-models'
 import type { ModeRing } from '../shared/helpers'
 import { getModeRing } from '../shared/helpers'
-import { io } from 'socket.io-client'
-import { api } from '../shared/endpoints'
+// import { io } from 'socket.io-client'
+// import { api } from '../shared/endpoints'
 
 monoduckInjectReact(React)
 
@@ -72,7 +72,7 @@ const store = {
     return rules.filter(rule => rule[modeRing.exists])
   }),
   //
-  // Flag notifs:
+  // Flag notifs (deprecated):
   flagNotifs: lookduck.observable<ZFlagNotif[]>([]),
   //
   // Hooks/components for backward compat:
@@ -80,12 +80,12 @@ const store = {
   useRouteInfo: roqsduck.useRouteInfo,
   RoqsLink: roqsduck.LinkFC
 }
-
-// Socket Related: /////////////////////////////////////////////////////////////
-const socket = io({ transports: ['websocket'] })
-tapiduck.sockOn(socket, api.external.sock.flagNotifFromServer, function (data) {
-  store.flagNotifs.set([data, ...store.flagNotifs.get()])
-})
+//
+// // Socket Related: /////////////////////////////////////////////////////////////
+// export const socket = io({ transports: ['websocket'] })
+// tapiduck.sockOn(socket, api.external.sock.flagNotifFromServer, function (data) {
+//   store.flagNotifs.set([data, ...store.flagNotifs.get()])
+// })
 
 // Export:
 export { store }

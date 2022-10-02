@@ -2,73 +2,51 @@ import { api } from '../shared/endpoints'
 import { ZTraits, ZModeEnum, ZFlagout, ZFlagoutMap } from '../shared/z-models'
 import type { VoidFn } from 'monoduck'
 import { _, tapiduck } from 'monoduck'
+import { io } from 'socket.io-client'
 
 const injectIsomorphicFetch = tapiduck.injectIsomorphicFetch
+
+type FlagleapInitStatus = 'todo' | 'doing' | 'done'
 
 interface FlagleapClientOptions {
   instanceUrl: string
   mode: ZModeEnum
-  ttl?: number
   traits?: ZTraits
 }
 
-type FlagleapLoadingPhase = 'before' | 'during' | 'after'
-
 interface FlagleapClient {
-  getLoadingPhase: () => FlagleapLoadingPhase
   reset: () => void
-  enforceTTL: () => void
-  getTTL: () => number | undefined
-  loadFlags: () => Promise<void>
+  init: () => Promise<void>
   setTraits: (newTraits: ZTraits) => void
   getFlag: (flagId: string) => Promise<ZFlagout>
   subscribe: (fn: VoidFn) => void
-  // setSingleFlagTTL: (ttl: number) => void
-  // loadSingleFlag: (flagId: string) => Promise<ZFlagout>
 }
 
 const buildFlagleapClient = function (
   opt: FlagleapClientOptions
 ): FlagleapClient {
-  const { instanceUrl, mode, ttl } = opt
-  let traits = opt.traits ?? {}
+  const { instanceUrl, mode, traits: optTraits } = opt
 
+  let traits = optTraits ?? {}
   let flagoutMap: ZFlagoutMap = {}
-  let flagoutMapLoadedAt = 0
-  let loadingPhase: FlagleapLoadingPhase = 'before'
+  let initStatus: FlagleapInitStatus = 'todo'
+
   const subscribers = new Set<VoidFn>()
   const subscribe = function (fn: VoidFn): VoidFn {
     subscribers.add(fn)
     return () => subscribers.delete(fn)
   }
-  const getLoadingPhase = (): FlagleapLoadingPhase => loadingPhase
   const reset = function (): void {
-    // flagoutMap = {} // <-- Don't do this, as it'll flick trues to falses
-    flagoutMapLoadedAt = 0
-    loadingPhase = 'before'
+    flagoutMap = {}
+    initStatus = 'todo' // TODO: Emit a warning if reset during 'doing'?
   }
-  const enforceTTL = function (): void {
-    // If TTL is undefined, then cache forever
-    if (ttl === undefined) {
-      return
-    }
-    if (loadingPhase === 'after' && Date.now() - flagoutMapLoadedAt > ttl) {
-      reset()
-      subscribers.forEach(fn => fn())
-    }
-  }
-  if (ttl !== undefined) {
-    setInterval(enforceTTL, ttl)
-  }
-  const getTTL = (): number | undefined => ttl
 
   const tapiFetch = tapiduck.fetchUsing(instanceUrl)
-  const loadFlags = async function (): Promise<void> {
-    if (loadingPhase === 'before') {
-      loadingPhase = 'during'
+  const init = async function (): Promise<void> {
+    if (initStatus === 'todo') {
+      initStatus = 'doing'
       flagoutMap = await tapiFetch(api.external.evalFlags, { mode, traits })
-      flagoutMapLoadedAt = Date.now()
-      loadingPhase = 'after'
+      initStatus = 'done'
       subscribers.forEach(fn => fn())
     }
   }
@@ -81,8 +59,7 @@ const buildFlagleapClient = function (
   }
 
   const getFlag = async function (flagId: string): Promise<ZFlagout> {
-    enforceTTL()
-    await loadFlags()
+    await init()
     if (flagoutMap[flagId] === undefined) {
       flagoutMap[flagId] = {
         id: flagId,
@@ -90,20 +67,33 @@ const buildFlagleapClient = function (
         value: ''
       }
     }
-    return flagoutMap[flagId] as ZFlagout
+    return _.bang(flagoutMap[flagId])
   }
 
+  const socket = io(instanceUrl, { transports: ['websocket'] })
+  tapiduck.sockOn(
+    socket,
+    api.external.sock.flagNotifFromServer,
+    function (data) {
+      const asyncFn = async function (): Promise<void> {
+        const flagout = await tapiFetch(api.external.evalFlag, {
+          traits, ...data
+        })
+        flagoutMap[flagout.id] = flagout
+        subscribers.forEach(fn => fn())
+      }
+      asyncFn().catch(e => { throw new Error(e) })
+    }
+  )
+
   return {
-    getLoadingPhase,
     reset,
-    enforceTTL,
-    getTTL,
-    loadFlags,
+    init,
     setTraits,
     getFlag,
     subscribe
   }
 }
 
-export type { FlagleapClientOptions, FlagleapLoadingPhase, FlagleapClient }
+export type { FlagleapClientOptions, FlagleapInitStatus, FlagleapClient }
 export { injectIsomorphicFetch, buildFlagleapClient }
