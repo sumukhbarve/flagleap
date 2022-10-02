@@ -19,7 +19,7 @@ export const config = {
   DIST_FRONTEND_DIR: repoRel('dist/frontend'),
   // Env:
   IS_PROD: getenv('NODE_ENV', 'development') === 'production',
-  PORT: Number(getenv('PORT', '3000', false)),
+  PORT: Number(getenv('PORT', '3333', false)),
   DATABASE_URL: getenv('DATABASE_URL', `sqlite:${repoRel('local-sqlite.db')}`),
   SECRET_KEY: getenv('SECRET_KEY', 'not-really-a-secret--just-the-fallback'),
   EXTRA_LATENCY: Number(getenv('EXTRA_LATENCY', '0', false))
