@@ -1,28 +1,46 @@
 # FlagLeap
 
-## What is it?
+### Table Of Contents
 
-- Simple and flexible solution for managing realtime feature flags.
-- Meant to be deployed as a standalone service, and consumed via REST API.
-- Supports rule-based flag evaluation (with support for multiple rule operators).
-- Two modes: `live` and `test`.  (Rules in `test` mode don't affect `live` mode.)
-- Currently includes SDKs for JavaScript (browser/node), TypeScript, and React (web).
+- [Introduction](#introduction)
+- [Screenshots](#screenshots)
+- [Pre-Alpha Software](#pre-alpha-software)
+- [Quickstart](#quickstart)
+- [Server Setup](#server-setup)
+- [Rest API](#rest-api)
+- [JS/TS/Node SDK](#jstsnode-sdk)
+- [React SDK](#react-sdk)
+
+## Introduction
+
+- FlagLeap is a simple & flexible solution for managing realtime feature flags.
+- It is meant to be deployed as a standalone service, and can be consumed via a REST API.
+- SDKs for JavaScript (browser and node), TypeScript, and React (web) are included.
+- FlagLeap supports rule-based, user-specific flag evaluations (with multiple rule types).
+- It has 2 modes: `live` and `test`.  (Rules in `test` mode don't affect `live` mode.)
 
 
-### Screenshots:
+## Screenshots
 
 | List of Flags | Flag-Specific Rules |
 | --- | --- |
 | <img alt="FlagLeap: List of Flags" src="/screenshots/2022-06-18-flagLister.png" width="450" /> | <img alt="FlagLeap: Flag-Specific Rules" src="/screenshots/2022-06-20-flagEditor.png" width="450" /> |
 
-### !!! Pre-Alpha Software !!!
+## Pre-Alpha Software
 
 - FlagLeap is not currently suitable for production use.
 - Large sections of it are being (re-)written every weekend.
 - External & internal APIs are both likely to undergo rapid change.
 
+## Quickstart
 
-## Quickstart:
+1. Please complete the [Server Setup](#server-setup) steps.
+2. And use any (one or more) of the following to interact with the server:
+    - [React SDK](#react-sdk):
+    - [JS/TS/Node SDK](#jstsnode-sdk)
+    - [REST API](#rest-api)
+
+## Server Setup
 
 ### 1. Clone the repo and start the server:
 
@@ -35,16 +53,53 @@
 ### 2. Set up your account and create your first flag:
 - Visit http://localhost:3333 and complete account setup.
 - Click 'Create Flag' and enter the an ID (eg. `enableFoo`) for the flag.
-- (3333 is the default port. Set environment variable `PORT` to override.)
 
-### 3. Use the API or an SDK to use feature flags in your app!
+### Set Environment Variables if deploying to the web:
+- `PORT` (defaults to 3333)
+- `DATABASE_URL` (defaults to repo/local-sqlite.db)
+- `SECRET_KEY` (defaults to not-really-a-secret--just-the-fallback)
 
-### 3A. Using the REST API:
+## Flag Shape
 
-- POST `/exapi/evalFlags` with below JSON request body, to evaluate all flags:
-  -  `{"mode": "test", "traits": {}}`
+A flag, as returned by the REST API (and SDKs) has the following shape:
+```ts
+interface Flag {
+  id: string
+  enabled: boolean
+  value: string
+}
+```
 
-CURL snippet for evaluating all flags:
+**FlagMap**
+
+A `FlagMap` is a mapping from flag IDs to corresponding flag objects.
+```ts
+type FlagMap = Record<string, Flag>
+```
+
+**`.enabled` vs `.value`**
+- If a flag is disabled, the `.value` will always be `''` (empty string).
+- If a flag is enabled, the value will be the result value of the first rule that is satisfied.
+- If a flag has no rules, the `.value` will be `''` (empty string).
+
+
+## Rest API
+
+Only `POST` requests of type `application/json` are expected.
+
+### 1. Evaluating all flags
+
+Endpoint:** `/exapi/evalFlags`
+
+Request Data:
+-  `mode`: `"test"` or `"live"`
+-  `traits`: A plain object describing the user, with only string or number values.
+    - Eg: `{"userId": "00c13408a...", "plan": "premium", "projectCount": 10}`
+
+**Response Data:** `FlagMap` (See [Flag Shape](#flag-shape) above)
+
+
+CURL snippet:
 ```sh
 curl --request POST \
   --url http://localhost:3000/exapi/evalFlags \
@@ -52,14 +107,31 @@ curl --request POST \
   --data '{"mode": "test", "traits": {}}'
 ```
 
-Quick Notes:
-1. The `traits` object can be used to specify user-specific properties.
-2. You can define flag-specific rules for trait-driven evaluations.
-3. To evaluate a single flag, hit `/exapi/evalFlag` with below JSON request body:
-    - `{"flag_id": "enableFoo", "mode": "test", "traits": {}}`
 
+### 2. Evaluating a single flag
 
-### 3B. Use the JavaScript (TypeScript) SDK:
+Endpoint: `/exapi/evalFlag`
+
+Request Data:
+- `flag_id`: string
+- `mode`: `"test"` or `"live"`
+- `traits`: A plain object describing the user, with only string or number values.
+    - Eg: `{"userId": "00c13408a...", "plan": "premium", "projectCount": 10}`
+
+Response Data: `Flag` (See [Flag Shape](#flag-shape) above)
+
+### 3. Socket.IO API
+
+- To subscribe to realtime updates, you can point a Socket.IO client to your FlagLeap server (`instanceUrl`).
+- Whenever a flag (potentially) changes, the server emits a `'flagNotifFromServer'` event.
+- The associated data has two properties:
+    - `flag_id`: string ID of the flag
+    - `mode`: either 'test' or 'live'
+
+- Upon receiving a `flagNotifFromServer`, you should use the `/exapi/evalFlag` endpoint to re-evaluate that flag.
+- If you're using one of the SDKs, then there's you needn't do this manually. The SDK will handle this for you.
+
+## JS/TS/Node SDK
 
 `npm install flagleap` in your app, and then:
 
@@ -89,7 +161,20 @@ flagleap.init().then(function () {
 flagleap.setTraits({})
 ```
 
-### 3C. Use the React SDK:
+### Isomorphic fetch() on Node.js:
+
+- To use the JS/TS SDK on Node, `npm install node-fetch` (or another isomorphic `fetch` function).
+- And supply it (dependency injection) to flagleap via `flagleapSdk.injectIsomorphicFetch(fetch)`.
+
+### Realtime Behavior:
+- To subscribe to realtime notifications regarding (potential) flag updates, use `.subscribe()`:
+```ts
+flagleap.subscribe(() => {
+  // This will be called whenever a flag changes.
+})
+```
+
+## React SDK
 
 `npm install flagleap` in your app, and then:
 
@@ -133,17 +218,3 @@ export const Counter: React.VFC = () => {
 ```
 
 Use the FlagLeap UI to (create and) enable the `enableAddTwo` flag. Toggling the flag will toggle the `Add 2` button in your app.
-
-### Isomorphic fetch() on Node.js:
-
-- To use the JS/TS SDK on Node.js, `npm install node-fetch` (or another isomorphic `fetch`).
-- And supply it (dependency injection) to flagleap via `flagleapSdk.injectIsomorphicFetch(fetch)`.
-
-### Realtime Behavior:
-- The React SDK is already realtime!
-- To get realtime updates in plain JS/TS, use `.subscribe()`:
-```ts
-flagleap.subscribe(() => {
-  // This will be called whenever a flag changes.
-})
-```
