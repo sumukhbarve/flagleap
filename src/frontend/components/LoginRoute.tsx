@@ -1,17 +1,17 @@
 import React from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { AuthWall } from './AuthWall'
-import { _, roqsduck, tapiduck } from 'monoduck'
+import { roqsduck, tapiduck } from 'monoduck'
 import { store } from '../store'
 import { api } from '../../shared/endpoints'
 import { useMountExpectsLoggedOut } from '../hooks'
-
-_.noop()
+import { autoLogin } from '../autoLogin'
 
 export const LoginRoute: React.VFC = function () {
   useMountExpectsLoggedOut()
   const [email, setEmail] = React.useState('')
   const [pw, setPw] = React.useState('')
+  const [rememberMe, setRememberMe] = React.useState(false)
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.spinnerText.set('Logging in ...')
@@ -21,6 +21,9 @@ export const LoginRoute: React.VFC = function () {
     store.spinnerText.set('')
     store.inapiToken.set(inapiToken)
     store.me.set(member)
+    if (rememberMe) {
+      autoLogin.rememberMe(inapiToken)
+    }
     roqsduck.setRouteInfo({ id: 'flagLister' })
   }
   return (
@@ -42,6 +45,18 @@ export const LoginRoute: React.VFC = function () {
             value={pw} onChange={e => setPw(e.currentTarget.value)}
           />
         </Form.Group>
+
+        {autoLogin.availableIs() && (
+          <Form.Group className='mb-3'>
+            <Form.Check
+              type='checkbox'
+              checked={rememberMe}
+              onChange={() => setRememberMe(bool => !bool)}
+              id='remember-me-form-check'
+              label='Remember me, this is a trusted device.'
+            />
+          </Form.Group>
+        )}
 
         <Button type='submit'>Submit</Button>
       </Form>

@@ -1,28 +1,29 @@
 import React from 'react'
-import { tapiduck } from 'monoduck'
+import { tapiduck, _ } from 'monoduck'
 import { api } from '../../shared/endpoints'
 import { store } from '../store'
-import { useMountExpectsLoggedIn, useAsyncEffect } from '../hooks'
+import { useAsyncEffect, useMountExpectsLoggedIn } from '../hooks'
 import { CreateFlagButton } from './CreateFlagButton'
 import { FlagCard } from './FlagCard'
 import { Col, Row } from 'react-bootstrap'
 import { FlagSearchbox } from './FlagSearchbox'
 
+const flagListerRouteLoader = async function (): Promise<void> {
+  const inapiToken = store.inapiToken.get()
+  if (_.bool(inapiToken) && store.flagList.get().length === 0) {
+    store.spinnerText.set('Fetching Flags ...')
+    const flags = await tapiduck.fetch(api.internal.getFlags, { inapiToken })
+    store.flagMap.updateObjects(flags)
+    store.spinnerText.set('')
+  }
+}
+
 export const FlagListerRoute: React.VFC = function () {
   useMountExpectsLoggedIn()
-  const flagList = store.use(store.searchedFlagList)
-  const inapiToken = store.use(store.inapiToken)
-  const loggedIn = store.use(store.loggedIn)
   useAsyncEffect(async function () {
-    if (loggedIn && flagList.length === 0) {
-      store.spinnerText.set('Fetching Flags ...')
-      const fetchedFlags = await tapiduck.fetch(api.internal.getFlags, {
-        inapiToken
-      })
-      store.flagMap.updateObjects(fetchedFlags)
-      store.spinnerText.set('')
-    }
+    await flagListerRouteLoader()
   }, [])
+  const flagList = store.use(store.searchedFlagList)
   return (
     <div>
       <h2 className='mb-3'>Flags</h2>

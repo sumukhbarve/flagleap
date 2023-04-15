@@ -2,6 +2,8 @@ import React from 'react'
 import { Link } from './Link'
 import { store } from '../store'
 import { Row, Col, Button } from 'react-bootstrap'
+import { roqsduck } from 'monoduck'
+import { autoLogin } from '../autoLogin'
 
 const ModeToggleButton: React.VFC = function () {
   const mode = store.use(store.mode)
@@ -11,6 +13,20 @@ const ModeToggleButton: React.VFC = function () {
     <Button variant={variant} onClick={() => store.mode.set(otherMode)}>
       In <samp><b>{mode}</b></samp> mode &nbsp;
       <span className='xxSmall'>. . . &nbsp; (Click to toggle)</span>
+    </Button>
+  )
+}
+
+const LogoutButtonLink: React.VFC = function () {
+  const onLogout = React.useCallback(function () {
+    store.inapiToken.reset()
+    store.me.reset()
+    autoLogin.forgetMe()
+    roqsduck.setRouteInfo({ id: 'login' })
+  }, [])
+  return (
+    <Button variant='link' onClick={onLogout}>
+      Logout
     </Button>
   )
 }
@@ -42,6 +58,7 @@ const LoggedInNavCols: React.VFC = function () {
     <>
       <Col className='alignRight'>
         <ModeToggleButton />
+        <LogoutButtonLink />
       </Col>
     </>
   )

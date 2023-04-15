@@ -52,7 +52,7 @@ const successResponse = function (member: ZMember): ZAuthSuccess {
 
 const getMe = async function (inapiToken: string): Promise<ZMember> {
   const tapiErrorMsg = 'Session expired. Please log in and retry.'
-  const memberId = jwtToTextSafely(inapiToken) // can throw
+  const memberId = jwtToTextSafely(inapiToken)
   if (_.not(memberId)) {
     throw new TapiError(tapiErrorMsg)
   }

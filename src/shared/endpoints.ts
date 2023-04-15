@@ -46,6 +46,11 @@ const login = tapiduck.endpoint({
   }),
   zRes: zAuthSuccess
 })
+const whoami = tapiduck.endpoint({
+  path: '/inapi/whoami',
+  zReq: zInapiToken,
+  zRes: zAuthSuccess
+})
 
 // Flags (internal):
 const createFlag = tapiduck.endpoint({
@@ -157,6 +162,7 @@ const api = {
     // auth:
     setup,
     login,
+    whoami,
     // flags:
     createFlag,
     getFlags,

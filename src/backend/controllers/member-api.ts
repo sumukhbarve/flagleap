@@ -42,3 +42,8 @@ tapiduck.route(app, api.internal.login, async function (reqdata) {
   }
   return auth.successResponse(member)
 })
+
+tapiduck.route(app, api.internal.whoami, async function (reqdata) {
+  const member = await auth.getMe(reqdata.inapiToken)
+  return auth.successResponse(member)
+})

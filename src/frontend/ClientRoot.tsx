@@ -7,6 +7,7 @@ import { ActiveRoute } from './components/ActiveRoute'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { SpinnerIndicator } from './components/SpinnerIndicator'
+import { autoLogin } from './autoLogin'
 
 const ClientRoot: React.VFC = function () {
   return (
@@ -19,4 +20,7 @@ const ClientRoot: React.VFC = function () {
   )
 }
 
-ReactDOM.render(<ClientRoot />, document.querySelector('#root'))
+// We currently hit whoami _before_ init'ing React. TODO: Reconsider?
+autoLogin.autoInitMe().finally(function () {
+  ReactDOM.render(<ClientRoot />, document.querySelector('#root'))
+})
