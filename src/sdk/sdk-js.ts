@@ -74,10 +74,10 @@ const buildFlagleapClient = function (
   tapiduck.sockOn(
     socket,
     api.external.sock.flagNotifFromServer,
-    function (data) {
+    function ({flag_id, mode}) {
       const asyncFn = async function (): Promise<void> {
         const flagout = await tapiFetch(api.external.evalFlag, {
-          traits, ...data
+          flag_id, mode, traits
         })
         flagoutMap[flagout.id] = flagout
         subscribers.forEach(fn => fn())
