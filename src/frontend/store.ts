@@ -1,7 +1,5 @@
 import React from 'react'
-import {
-  _, lookduck, roqsduck, injectReact as monoduckInjectReact // tapiduck
-} from 'monoduck'
+import { _, lookduck } from 'monoduck'
 import type {
   ZMemberWoHpass, ZFlag, ZRule, ZFlagNotif
 } from '../shared/z-models'
@@ -10,9 +8,7 @@ import { getModeRing } from '../shared/helpers'
 // import { io } from 'socket.io-client'
 // import { api } from '../shared/endpoints'
 
-monoduckInjectReact(React)
-
-const store = {
+export const store = {
   //
   // Spinner:
   spinnerText: lookduck.observable(''),
@@ -73,12 +69,7 @@ const store = {
   }),
   //
   // Flag notifs (deprecated):
-  flagNotifs: lookduck.observable<ZFlagNotif[]>([]),
-  //
-  // Hooks/components for backward compat:
-  use: lookduck.useLookable,
-  useRouteInfo: roqsduck.useRouteInfo,
-  RoqsLink: roqsduck.LinkFC
+  flagNotifs: lookduck.observable<ZFlagNotif[]>([])
 }
 //
 // // Socket Related: /////////////////////////////////////////////////////////////
@@ -87,5 +78,4 @@ const store = {
 //   store.flagNotifs.set([data, ...store.flagNotifs.get()])
 // })
 
-// Export:
-export { store }
+export const useStore = lookduck.makeUseStore(store, React)

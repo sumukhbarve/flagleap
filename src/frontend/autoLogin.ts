@@ -1,6 +1,5 @@
 import { tapiduck, _ } from 'monoduck'
 import { api } from '../shared/endpoints'
-import { ZMemberWoHpass } from '../shared/z-models'
 import { store } from './store'
 
 const AUTOLOGIN_STORAGE_KEY = 'flagleap_autoLogin_inapiToken'
@@ -27,17 +26,14 @@ export const autoLogin = {
     if (_.not(inapiToken)) {
       return undefined
     }
-    let me: ZMemberWoHpass | null = null
-    try {
-      // Note: Not calling store.spinnerText.set(), as auto-login preceeds React init.
-      me = (await tapiduck.fetch(api.internal.whoami, { inapiToken })).member
-    } catch (e) {
-      me = null
+    const resp = await tapiduck.fetch(api.internal.whoami, { inapiToken })
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
     }
-    if (_.bool(me)) {
-      store.inapiToken.set(inapiToken)
-      store.me.set(me)
-      _.assert(store.loggedIn.get(), 'must be logged in on autoLogin success')
-    }
+    await tapiduck.fetch(api.internal.whoami, { inapiToken })
+    const { member } = resp.data
+    store.inapiToken.set(inapiToken)
+    store.me.set(member)
+    _.assert(store.loggedIn.get(), 'must be logged in on autoLogin success')
   }
 }

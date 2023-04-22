@@ -7,26 +7,26 @@ import { app } from './api-base'
 import { models } from '../models'
 import { ruleMatcher } from '../rule-engine'
 
-tapiduck.route(app, api.external.evalFlag, async function (reqdata) {
+tapiduck.route(app, api.external.evalFlag, async function (reqdata, jsend) {
   const flagId = reqdata.flag_id
   const modeRing = getModeRing(reqdata.mode)
   const flag = await models.flag.findOne({ where: { id: flagId } })
   if (_.not(flag)) {
-    return { id: reqdata.flag_id, enabled: false, value: '' }
+    return jsend.success({ id: reqdata.flag_id, enabled: false, value: '' })
   }
   const rules: ZRule[] = await models.rule.findAll({
     where: { flag_id: flag.id, [modeRing.exists]: 1 },
     order: [['rank', 'ASC']]
   })
   const mRule = ruleMatcher(rules, reqdata.traits)
-  return {
+  return jsend.success({
     id: flag.id,
     enabled: flag[modeRing.enabled] === 1,
     value: mRule === null ? '' : mRule.result_value
-  }
+  })
 })
 
-tapiduck.route(app, api.external.evalFlags, async function (reqdata) {
+tapiduck.route(app, api.external.evalFlags, async function (reqdata, jsend) {
   const iFlagIds = reqdata.flag_ids
   const flagWhere = _.bool(iFlagIds) ? { id: { [SqlOp.in]: iFlagIds } } : {}
   const flags = await models.flag.findAll({ where: flagWhere })
@@ -49,5 +49,5 @@ tapiduck.route(app, api.external.evalFlags, async function (reqdata) {
       value: mRule === null ? '' : mRule.result_value
     }
   })
-  return output
+  return jsend.success(output)
 })

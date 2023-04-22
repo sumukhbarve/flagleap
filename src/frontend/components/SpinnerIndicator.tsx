@@ -1,10 +1,10 @@
 import React from 'react'
-import { store } from '../store'
+import { useStore } from '../store'
 import { Spinner } from 'react-bootstrap'
 import { _ } from 'monoduck'
 
 export const SpinnerIndicator: React.VFC = function () {
-  const spinnerText = store.use(store.spinnerText)
+  const { spinnerText } = useStore('spinnerText')
   const divStyle = {
     position: 'fixed', top: 70, left: 0, width: '100%', textAlign: 'center', zIndex: 1100
   } as const

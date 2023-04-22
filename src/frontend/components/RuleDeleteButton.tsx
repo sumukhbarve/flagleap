@@ -10,12 +10,16 @@ export const RuleDeleteButton: React.VFC<{ruleId: string}> = function (props) {
       return undefined
     }
     store.spinnerText.set('Deleting Rule ...')
-    const rule = await tapiduck.fetch(api.internal.deleteRule, {
+    const resp = await tapiduck.fetch(api.internal.deleteRule, {
       rule_id: props.ruleId,
       inapiToken: store.inapiToken.get()
     })
-    store.ruleMap.popByIds([rule.id])
     store.spinnerText.set('')
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
+    }
+    const rule = resp.data;
+    store.ruleMap.popByIds([rule.id])
   }
   return (
     <Button size='sm' variant='link' onClick={onDelete}>

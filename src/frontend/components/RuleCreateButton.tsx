@@ -13,14 +13,19 @@ export const RuleCreateButton: React.VFC<Props> = function (props) {
   const { flagId, newRank } = props
   const onCreate = async function (): Promise<void> {
     store.spinnerText.set('Creating Rule ...')
-    const rule = await tapiduck.fetch(api.internal.createRule, {
+    const resp = await tapiduck.fetch(api.internal.createRule, {
       flag_id: flagId,
       mode: store.mode.get(),
       rank: newRank,
       inapiToken: store.inapiToken.get()
     })
-    store.ruleMap.updateObjects([rule])
     store.spinnerText.set('')
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
+    }
+    const rule = resp.data
+    store.ruleMap.updateObjects([rule])
+
     setTimeout(function () {
       document.getElementById(getIdForRuleEditButton(rule.id))?.click()
     }, 10)

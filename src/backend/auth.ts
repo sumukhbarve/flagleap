@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { _, TapiError } from 'monoduck'
+import { _ } from 'monoduck'
 import { config } from './config'
 import type { ZMember, ZMemberWoHpass } from '../shared/z-models'
 import type { ZAuthSuccess } from '../shared/endpoints'
@@ -50,19 +50,17 @@ const successResponse = function (member: ZMember): ZAuthSuccess {
   }
 }
 
-const getMe = async function (inapiToken: string): Promise<ZMember> {
-  const tapiErrorMsg = 'Session expired. Please log in and retry.'
+const getMe = async function (inapiToken: string): Promise<ZMember | null> {
   const memberId = jwtToTextSafely(inapiToken)
   if (_.not(memberId)) {
-    throw new TapiError(tapiErrorMsg)
+    return null
   }
   const member = await models.member.findOne({ where: { id: memberId } })
-  if (_.not(member)) {
-    throw new TapiError(tapiErrorMsg)
-  }
-  return member
+  return member ?? null
 }
 
+const generalFailText = 'Session expired. Please log in and retry.'
+
 export const auth = {
-  hashPw, checkPw, woHpass, successResponse, getMe
+  hashPw, checkPw, woHpass, successResponse, getMe, generalFailText
 }

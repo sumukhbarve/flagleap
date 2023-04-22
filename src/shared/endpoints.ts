@@ -8,7 +8,7 @@ import {
 
 // Prelims: ////////////////////////////////////////////////////////////////////
 
-const include = true
+const include = true // alias, useful for writing zFoo.pick({bar: include})
 
 const zId = z.object({ id: z.string() })
 const zInapiToken = z.object({ inapiToken: z.string() })
@@ -19,8 +19,9 @@ type ZAuthSuccess = z.infer<typeof zAuthSuccess>
 
 const ping = tapiduck.endpoint({
   path: '/coapi/ping',
-  zReq: z.object({ ping: z.string() }),
-  zRes: z.object({ pong: z.string() })
+  zRequest: z.object({ ping: z.string() }),
+  zSuccess: z.object({ pong: z.string() }),
+  zFail: z.string()
 })
 
 /// ////////////////////////////////////////////////////////////////////////////
@@ -30,42 +31,47 @@ const ping = tapiduck.endpoint({
 // Auth (internal):
 const setup = tapiduck.endpoint({
   path: '/inapi/setup',
-  zReq: z.object({
+  zRequest: z.object({
     fname: z.string(),
     lname: z.string(),
     email: z.string(),
     password: z.string()
   }),
-  zRes: zAuthSuccess
+  zSuccess: zAuthSuccess,
+  zFail: z.string()
 })
 const login = tapiduck.endpoint({
   path: '/inapi/login',
-  zReq: z.object({
+  zRequest: z.object({
     email: z.string(),
     password: z.string()
   }),
-  zRes: zAuthSuccess
+  zSuccess: zAuthSuccess,
+  zFail: z.string()
 })
 const whoami = tapiduck.endpoint({
   path: '/inapi/whoami',
-  zReq: zInapiToken,
-  zRes: zAuthSuccess
+  zRequest: zInapiToken,
+  zSuccess: zAuthSuccess,
+  zFail: z.string()
 })
 
 // Flags (internal):
 const createFlag = tapiduck.endpoint({
   path: '/inapi/createFlag',
-  zReq: zInapiToken.extend({ flag_id: z.string() }),
-  zRes: zFlag
+  zRequest: zInapiToken.extend({ flag_id: z.string() }),
+  zSuccess: zFlag,
+  zFail: z.string()
 })
 const getFlags = tapiduck.endpoint({
   path: '/inapi/getFlags',
-  zReq: zInapiToken,
-  zRes: z.array(zFlag)
+  zRequest: zInapiToken,
+  zSuccess: z.array(zFlag),
+  zFail: z.string()
 })
 const updateFlag = tapiduck.endpoint({
   path: '/inapi/updateFlag',
-  zReq: zInapiToken.extend({
+  zRequest: zInapiToken.extend({
     flag: zId.and(
       // To allow surgical updates, all non-ID flag-props are optional.
       zFlag.pick({
@@ -76,32 +82,36 @@ const updateFlag = tapiduck.endpoint({
       }).partial()
     )
   }),
-  zRes: zFlag
+  zSuccess: zFlag,
+  zFail: z.string()
 })
 const deleteFlag = tapiduck.endpoint({
   path: '/inapi/deleteFlag',
-  zReq: zInapiToken.extend({ flag_id: z.string() }),
-  zRes: zId
+  zRequest: zInapiToken.extend({ flag_id: z.string() }),
+  zSuccess: zId,
+  zFail: z.string()
 })
 
 // Rules (internal):
 const createRule = tapiduck.endpoint({
   path: '/inapi/createRule',
-  zReq: zInapiToken.extend({
+  zRequest: zInapiToken.extend({
     flag_id: z.string(),
     mode: zModeEnum,
     rank: z.number()
   }),
-  zRes: zRule
+  zSuccess: zRule,
+  zFail: z.string()
 })
 const getFlagRules = tapiduck.endpoint({
   path: '/inapi/getFlagRules',
-  zReq: zInapiToken.extend({ flag_id: z.string() }),
-  zRes: z.array(zRule)
+  zRequest: zInapiToken.extend({ flag_id: z.string() }),
+  zSuccess: z.array(zRule),
+  zFail: z.string()
 })
 const updateRule = tapiduck.endpoint({
   path: '/inapi/updateRule',
-  zReq: zInapiToken.extend({
+  zRequest: zInapiToken.extend({
     rule: zRule.pick({
       id: include,
       rank: include,
@@ -113,12 +123,14 @@ const updateRule = tapiduck.endpoint({
       result_value: include
     })
   }),
-  zRes: zRule
+  zSuccess: zRule,
+  zFail: z.string()
 })
 const deleteRule = tapiduck.endpoint({
   path: '/inapi/deleteRule',
-  zReq: zInapiToken.extend({ rule_id: z.string() }),
-  zRes: zId
+  zRequest: zInapiToken.extend({ rule_id: z.string() }),
+  zSuccess: zId,
+  zFail: z.string()
 })
 
 /// ////////////////////////////////////////////////////////////////////////////
@@ -127,22 +139,24 @@ const deleteRule = tapiduck.endpoint({
 
 const evalFlag = tapiduck.endpoint({
   path: '/exapi/evalFlag',
-  zReq: zExapiToken.extend({
+  zRequest: zExapiToken.extend({
     flag_id: z.string(),
     mode: zModeEnum,
     traits: zTraits
 
   }),
-  zRes: zFlagout
+  zSuccess: zFlagout,
+  zFail: z.string()
 })
 const evalFlags = tapiduck.endpoint({
   path: '/exapi/evalFlags',
-  zReq: zExapiToken.extend({
+  zRequest: zExapiToken.extend({
     flag_ids: z.array(z.string()).optional(),
     mode: zModeEnum,
     traits: zTraits
   }),
-  zRes: zFlagoutMap
+  zSuccess: zFlagoutMap,
+  zFail: z.string()
 })
 
 // Socket Related: /////////////////////////////////////////////////////////////

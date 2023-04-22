@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { _, tapiduck, TapiError } from 'monoduck'
+import { _, tapiduck } from 'monoduck'
 import type { ZRule } from '../../shared/z-models'
 import { defaultRuleRow } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
@@ -8,11 +8,14 @@ import { models } from '../models'
 import { auth } from '../auth'
 import { emitFlagNotif, getModeFromRule } from './sock-util'
 
-tapiduck.route(app, api.internal.createRule, async function (reqdata) {
+tapiduck.route(app, api.internal.createRule, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
+  if (!me) {
+    return jsend.fail(auth.generalFailText)
+  }
   const flag = await models.flag.findOne({ where: { id: reqdata.flag_id } })
   if (_.not(flag)) {
-    throw new TapiError('No such flag.') // Can't create rule for missing flag
+    return jsend.fail('No such flag.') // Can't create rule for missing flag
   }
   const rule: ZRule = {
     ...defaultRuleRow,
@@ -26,19 +29,28 @@ tapiduck.route(app, api.internal.createRule, async function (reqdata) {
   }
   await models.rule.create(rule)
   emitFlagNotif(rule.flag_id, reqdata.mode)
-  return rule
+  return jsend.success(rule)
 })
 
-tapiduck.route(app, api.internal.getFlagRules, async function (reqdata) {
-  await auth.getMe(reqdata.inapiToken)
-  return await models.rule.findAll({ where: { flag_id: reqdata.flag_id } })
-})
-
-tapiduck.route(app, api.internal.updateRule, async function (reqdata) {
+tapiduck.route(app, api.internal.getFlagRules, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
+  if (!me) {
+    return jsend.fail(auth.generalFailText)
+  }
+  const rules: ZRule[] = await models.rule.findAll(
+    { where: { flag_id: reqdata.flag_id } }
+  )
+  return jsend.success(rules)
+})
+
+tapiduck.route(app, api.internal.updateRule, async function (reqdata, jsend) {
+  const me = await auth.getMe(reqdata.inapiToken)
+  if (!me) {
+    return jsend.fail(auth.generalFailText)
+  }
   const oldRule = await models.rule.findOne({ where: { id: reqdata.rule.id } })
   if (_.not(oldRule)) {
-    throw new TapiError('No such rule.')
+    return jsend.fail('No such rule.')
   }
   const updatedRule: ZRule = {
     ...oldRule,
@@ -48,16 +60,19 @@ tapiduck.route(app, api.internal.updateRule, async function (reqdata) {
   }
   await models.rule.replace(updatedRule)
   emitFlagNotif(updatedRule.flag_id, getModeFromRule(updatedRule))
-  return updatedRule
+  return jsend.success(updatedRule)
 })
 
-tapiduck.route(app, api.internal.deleteRule, async function (reqdata) {
-  await auth.getMe(reqdata.inapiToken)
+tapiduck.route(app, api.internal.deleteRule, async function (reqdata, jsend) {
+  const me = await auth.getMe(reqdata.inapiToken)
+  if (!me) {
+    return jsend.fail(auth.generalFailText)
+  }
   const rule = await models.rule.findOne({ where: { id: reqdata.rule_id } })
   if (_.not(rule)) {
-    throw new TapiError('No such rule.')
+    return jsend.fail('No such rule.')
   }
   await models.rule.deleteById(rule.id)
   emitFlagNotif(rule.flag_id, getModeFromRule(rule))
-  return { id: rule.id }
+  return jsend.success({ id: rule.id })
 })

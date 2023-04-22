@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { AuthWall } from './AuthWall'
-import { roqsduck, tapiduck } from 'monoduck'
+import { roqsduck, tapiduck, _ } from 'monoduck'
 import { store } from '../store'
 import { api } from '../../shared/endpoints'
 import { useMountExpectsLoggedOut } from '../hooks'
@@ -12,13 +12,18 @@ export const LoginRoute: React.VFC = function () {
   const [email, setEmail] = React.useState('')
   const [pw, setPw] = React.useState('')
   const [rememberMe, setRememberMe] = React.useState(false)
+  const [errMsg, setErrMsg] = React.useState('')
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.spinnerText.set('Logging in ...')
-    const { inapiToken, member } = await tapiduck.fetch(api.internal.login, {
+    const resp = await tapiduck.fetch(api.internal.login, {
       email, password: pw
     })
     store.spinnerText.set('')
+    if (resp.status !== 'success') {
+      return setErrMsg(tapiduck.failMsg(resp, data => data))
+    }
+    const { inapiToken, member } = resp.data
     store.inapiToken.set(inapiToken)
     store.me.set(member)
     if (rememberMe) {
@@ -58,7 +63,12 @@ export const LoginRoute: React.VFC = function () {
           </Form.Group>
         )}
 
-        <Button type='submit'>Submit</Button>
+        <Form.Group className='mb-3'>
+          {_.bool(errMsg) && (
+            <p className='text-danger'>Error: {errMsg}</p>
+          )}
+          <Button type='submit'>Submit</Button>
+        </Form.Group>
       </Form>
     </AuthWall>
   )

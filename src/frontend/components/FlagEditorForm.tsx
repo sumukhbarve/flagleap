@@ -1,13 +1,13 @@
 import React from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { _, tapiduck } from 'monoduck'
-import { store } from '../store'
+import { store, useStore } from '../store'
 import type { ZFlag } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 
 export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   const [flagX, setFlagX] = React.useState({ ...flag })
-  const modeRing = store.use(store.modeRing)
+  const { modeRing, spinnerText } = useStore('modeRing', 'spinnerText')
   const computeSaved = function (): boolean {
     return _.all([
       flagX.description === flag.description,
@@ -17,11 +17,11 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
   }
   const [isSaved, setIsSaved] = React.useState(computeSaved())
   React.useEffect(() => setIsSaved(computeSaved())) // On every render
-  const isSaving = store.use(store.spinnerText) !== ''
+  const isSaving = spinnerText !== ''
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     store.spinnerText.set('Saving Flag ...')
-    const updatedFlag = await tapiduck.fetch(api.internal.updateFlag, {
+    const resp = await tapiduck.fetch(api.internal.updateFlag, {
       inapiToken: store.inapiToken.get(),
       flag: {
         id: flag.id,
@@ -29,8 +29,12 @@ export const FlagEditorForm: React.VFC<{flag: ZFlag}> = function ({ flag }) {
         description: flagX.description
       }
     })
-    store.flagMap.updateObjects([updatedFlag])
     store.spinnerText.set('')
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
+    }
+    const updatedFlag = resp.data
+    store.flagMap.updateObjects([updatedFlag])
   }
   return (
     <Form onSubmit={onSubmit}>

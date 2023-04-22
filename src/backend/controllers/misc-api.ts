@@ -8,6 +8,6 @@ app.use(express.static(config.DIST_FRONTEND_DIR))
 
 app.get('/', (_req, res) => res.redirect('/client.html'))
 
-tapiduck.route(app, api.common.ping, async function (reqdata) {
-  return { pong: reqdata.ping }
+tapiduck.route(app, api.common.ping, async function (reqdata, jsend) {
+  return jsend.success({ pong: reqdata.ping })
 })

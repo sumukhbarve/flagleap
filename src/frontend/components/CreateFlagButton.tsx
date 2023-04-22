@@ -1,21 +1,26 @@
 import React from 'react'
 import { roqsduck, tapiduck } from 'monoduck'
 import { api } from '../../shared/endpoints'
-import { store } from '../store'
+import { store, useStore } from '../store'
 import { Button, Modal, Form } from 'react-bootstrap'
 
 export const CreateFlagButton: React.VFC = function () {
   const [show, setShow] = React.useState(false)
   const [flagId, setFlagId] = React.useState('')
   const onHide = React.useCallback(() => setShow(false), [])
-  const inapiToken = store.use(store.inapiToken)
+  const { inapiToken } = useStore('inapiToken')
   const onCreate = async function (): Promise<void> {
     store.spinnerText.set('Creating Flag ...')
-    const flag = await tapiduck.fetch(api.internal.createFlag, {
+    const resp = await tapiduck.fetch(api.internal.createFlag, {
       inapiToken, flag_id: flagId
     })
-    store.flagMap.updateObjects([flag])
     store.spinnerText.set('')
+    setShow(false)
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
+    }
+    const flag = resp.data;
+    store.flagMap.updateObjects([flag])
     setShow(false)
     roqsduck.setRouteInfo({ id: 'flagEditor', flagId: flag.id })
   }

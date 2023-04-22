@@ -3,7 +3,7 @@ import { tapiduck } from 'monoduck'
 import type { ZRule } from '../../shared/z-models'
 import { zOperatorEnum } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
-import { store } from '../store'
+import { store, useStore } from '../store'
 import { Button, Form, Row, Col } from 'react-bootstrap'
 
 interface RuleEditorFormProps {
@@ -13,16 +13,21 @@ interface RuleEditorFormProps {
 export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
   const { rule, close } = props
   const [ruleX, setRuleX] = React.useState({ ...rule })
-  const isSpinning = store.use(store.isSpinning)
+  const { isSpinning } = useStore('isSpinning')
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     if (isSpinning) { return undefined }
     store.spinnerText.set('Saving Rule ...')
-    const updatedRule = await tapiduck.fetch(api.internal.updateRule, {
+    const resp = await tapiduck.fetch(api.internal.updateRule, {
       rule: ruleX, inapiToken: store.inapiToken.get()
     })
-    store.ruleMap.updateObjects([updatedRule])
     store.spinnerText.set('')
+    if (resp.status !== 'success') {
+      return window.alert(tapiduck.failMsg(resp, data => data))
+    }
+    const updatedRule = resp.data;
+    store.ruleMap.updateObjects([updatedRule])
+
     close()
   }
   const setPropX = function (k: keyof ZRule, v: ZRule[typeof k]): void {

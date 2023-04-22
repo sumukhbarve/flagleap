@@ -45,7 +45,14 @@ const buildFlagleapClient = function (
   const init = async function (): Promise<void> {
     if (initStatus === 'todo') {
       initStatus = 'doing'
-      flagoutMap = await tapiFetch(api.external.evalFlags, { mode, traits })
+      const resp = await tapiFetch(api.external.evalFlags, { mode, traits })
+      if (resp.status !== 'success') {
+        console.error('FlagLeap API call did NOT succeed.')
+        console.error(tapiduck.failMsg(resp, data => data))
+        initStatus = 'todo' // revert status back to 'todo'
+        return undefined
+      }
+      flagoutMap = resp.data
       initStatus = 'done'
       subscribers.forEach(fn => fn())
     }
@@ -74,11 +81,17 @@ const buildFlagleapClient = function (
   tapiduck.sockOn(
     socket,
     api.external.sock.flagNotifFromServer,
-    function ({flag_id, mode}) {
+    function ({flag_id: flagId, mode}) {
       const asyncFn = async function (): Promise<void> {
-        const flagout = await tapiFetch(api.external.evalFlag, {
-          flag_id, mode, traits
+        const resp = await tapiFetch(api.external.evalFlag, {
+          flag_id: flagId, mode, traits
         })
+        if (resp.status !== 'success') {
+          console.error(`Evaluation did NOT succeed for flag: ${flagId}`)
+          console.error(tapiduck.failMsg(resp, data => data))
+          return undefined
+        }
+        const flagout = resp.data
         flagoutMap[flagout.id] = flagout
         subscribers.forEach(fn => fn())
       }

@@ -1,3 +1,3 @@
-import { store } from '../store'
+import { roqsduck } from 'monoduck'
 
-export const Link = store.RoqsLink
+export const Link = roqsduck.LinkFC

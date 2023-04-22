@@ -1,6 +1,5 @@
 import React from 'react'
-import type { Lookable } from 'monoduck'
-import { _, roqsduck } from 'monoduck'
+import { Lookable, lookduck, _, roqsduck } from 'monoduck'
 import { store } from './store'
 
 type VoidFn = () => void // TODO: Import this?
@@ -26,7 +25,7 @@ const makeUseMountExpectsElseRedir = function<T> (
   lookable: Lookable<T>, expectedVal: T, redirToId: string
 ): () => void {
   const useMountExpectsElseRedir = function (): void {
-    const val = store.use(lookable)
+    const val = lookduck.useLookable(lookable)
     React.useEffect(function () {
       if (val !== expectedVal) {
         roqsduck.setRouteInfo({ id: redirToId })

@@ -1,5 +1,5 @@
 import React from 'react'
-import { store } from '../store'
+import { useStore } from '../store'
 import { SetupRoute } from './SetupRoute'
 import { LoginRoute } from './LoginRoute'
 import { FlagListerRoute } from './FlagListerRoute'
@@ -10,7 +10,7 @@ import { NotifListerRoute } from './NotifListerRoute'
 import { TodoExampleRoute } from '../examples/TodoExampleRoute'
 
 const DefaultBlankIdRoute: React.VFC = function () {
-  const defaultRouteId = store.use(store.defaultRouteId)
+  const { defaultRouteId } = useStore('defaultRouteId')
   React.useEffect(() => roqsduck.setRouteInfo({ id: defaultRouteId }), [])
   return (
     <div>
@@ -42,7 +42,7 @@ const NoSuchRoute: React.VFC = function () {
   )
 }
 export const ActiveRoute: React.VFC = function () {
-  const routeInfo = store.useRouteInfo()
+  const routeInfo = roqsduck.useRouteInfo()
   console.log(routeInfo.id)
   const RouteComponent = routeMap[routeInfo.id] ?? NoSuchRoute
   return <RouteComponent />

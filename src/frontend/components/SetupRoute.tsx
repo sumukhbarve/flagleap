@@ -15,9 +15,13 @@ export const SetupRoute: React.VFC = function () {
   const [pw2, setPw2] = React.useState('')
   const onSubmit = async function (event: React.FormEvent): Promise<void> {
     event.preventDefault()
-    const { inapiToken, member } = await tapiduck.fetch(api.internal.setup, {
+    const resp = await tapiduck.fetch(api.internal.setup, {
       fname, lname, email, password: pw
     })
+    if (resp.status !== 'success'){
+      return window.alert(resp.status === 'fail' ? resp.data : 'Unknown error')
+    }
+    const { inapiToken, member } = resp.data
     store.inapiToken.set(inapiToken)
     store.me.set(member)
     roqsduck.setRouteInfo({ id: 'flagLister' })

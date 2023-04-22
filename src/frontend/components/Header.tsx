@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link } from './Link'
-import { store } from '../store'
+import { store, useStore } from '../store'
 import { Row, Col, Button } from 'react-bootstrap'
 import { roqsduck } from 'monoduck'
 import { autoLogin } from '../autoLogin'
 
 const ModeToggleButton: React.VFC = function () {
-  const mode = store.use(store.mode)
+  const { mode } = useStore('mode')
   const otherMode = mode === 'live' ? 'test' : 'live'
   const variant = mode === 'live' ? 'success' : 'warning'
   return (
@@ -32,7 +32,7 @@ const LogoutButtonLink: React.VFC = function () {
 }
 
 const LoggedOutNavCols: React.VFC = function () {
-  const routeId = store.useRouteInfo().id
+  const routeId = roqsduck.useRouteInfo().id
   return (
     <>
       <Col>
@@ -65,8 +65,7 @@ const LoggedInNavCols: React.VFC = function () {
 }
 
 export const Header: React.VFC = function () {
-  const loggedIn = store.use(store.loggedIn)
-  const defaultRouteId = store.use(store.defaultRouteId)
+  const { loggedIn, defaultRouteId } = useStore('loggedIn', 'defaultRouteId')
   const style = {
     paddingBlock: 15, borderBottom: '1px solid slategray', marginBottom: 15
   } as const

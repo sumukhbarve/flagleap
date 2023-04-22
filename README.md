@@ -4,7 +4,7 @@
 
 - [Introduction](#introduction)
 - [Screenshots](#screenshots)
-- [Pre-Alpha Software](#pre-alpha-software)
+- [Not Ready for Production](#not-ready-for-production)
 - [Quickstart](#quickstart)
 - [Server Setup](#server-setup)
 - [Rest API](#rest-api)
@@ -26,11 +26,11 @@
 | --- | --- |
 | <img alt="FlagLeap: List of Flags" src="/screenshots/2022-06-18-flagLister.png" width="450" /> | <img alt="FlagLeap: Flag-Specific Rules" src="/screenshots/2022-06-20-flagEditor.png" width="450" /> |
 
-## Pre-Alpha Software
+## Not Ready for Production
 
-- FlagLeap is not currently suitable for production use.
-- Large sections of it are being (re-)written every weekend.
-- External & internal APIs are both likely to undergo rapid change.
+- FlagLeap is not yet ready for production use.
+- External & internal APIs are both likely change.
+- However, it is ready for POCs and non-critical internal apps.
 
 ## Quickstart
 
@@ -70,7 +70,7 @@ interface Flag {
 }
 ```
 
-**FlagMap**
+#### FlagMap
 
 A `FlagMap` is a mapping from flag IDs to corresponding flag objects.
 ```ts
@@ -89,20 +89,22 @@ Only `POST` requests of type `application/json` are expected.
 
 ### 1. Evaluating all flags
 
-Endpoint:** `/exapi/evalFlags`
+Endpoint: `/exapi/evalFlags`
 
 Request Data:
 -  `mode`: `"test"` or `"live"`
 -  `traits`: A plain object describing the user, with only string or number values.
     - Eg: `{"userId": "00c13408a...", "plan": "premium", "projectCount": 10}`
 
-**Response Data:** `FlagMap` (See [Flag Shape](#flag-shape) above)
+Successful Response Shape:
+- `{status: "success", data: FlagMap}` (See [FlagMap](#flagmap) shape above)
+
 
 
 CURL snippet:
 ```sh
 curl --request POST \
-  --url http://localhost:3000/exapi/evalFlags \
+  --url http://localhost:3333/exapi/evalFlags \
   --header 'content-type: application/json' \
   --data '{"mode": "test", "traits": {}}'
 ```
@@ -118,7 +120,8 @@ Request Data:
 - `traits`: A plain object describing the user, with only string or number values.
     - Eg: `{"userId": "00c13408a...", "plan": "premium", "projectCount": 10}`
 
-Response Data: `Flag` (See [Flag Shape](#flag-shape) above)
+Successful Response Shape:
+- `{status: "success", data: Flag}` (See [Flag](#flag-shape) shape above)
 
 ### 3. Socket.IO API
 
