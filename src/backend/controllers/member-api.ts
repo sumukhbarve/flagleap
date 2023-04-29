@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { tapiduck } from 'monoduck'
+import { tapiduck, _ } from 'monoduck'
 import type { ZMember } from '../../shared/z-models'
 import { api } from '../../shared/endpoints'
 import { app } from './api-base'
@@ -45,7 +45,7 @@ tapiduck.route(app, api.internal.login, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.whoami, async function (reqdata, jsend) {
   const member = await auth.getMe(reqdata.inapiToken)
-  return member
+  return _.bool(member)
     ? jsend.success(auth.successResponse(member))
     : jsend.fail(auth.generalFailText)
 })

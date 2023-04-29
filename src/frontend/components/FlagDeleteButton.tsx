@@ -24,9 +24,9 @@ const onDelete = async function (flagId: string): Promise<void> {
   roqsduck.setRouteInfo({ id: 'flagLister' })
 }
 
-export const FlagDeleteButton: React.VFC<{flagId: string}> = function ({flagId}) {
+export const FlagDeleteButton: React.VFC<{flagId: string}> = function ({ flagId }) {
   return (
-    <Button size='sm' variant='secondary' onClick={() => onDelete(flagId)}>
+    <Button size='sm' variant='secondary' onClick={async () => await onDelete(flagId)}>
       Delete Flag
     </Button>
   )

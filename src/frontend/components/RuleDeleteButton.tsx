@@ -18,7 +18,7 @@ export const RuleDeleteButton: React.VFC<{ruleId: string}> = function (props) {
     if (resp.status !== 'success') {
       return window.alert(tapiduck.failMsg(resp, data => data))
     }
-    const rule = resp.data;
+    const rule = resp.data
     store.ruleMap.popByIds([rule.id])
   }
   return (

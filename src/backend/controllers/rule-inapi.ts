@@ -10,7 +10,7 @@ import { emitFlagNotif, getModeFromRule } from './sock-util'
 
 tapiduck.route(app, api.internal.createRule, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const flag = await models.flag.findOne({ where: { id: reqdata.flag_id } })
@@ -34,7 +34,7 @@ tapiduck.route(app, api.internal.createRule, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.getFlagRules, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const rules: ZRule[] = await models.rule.findAll(
@@ -45,7 +45,7 @@ tapiduck.route(app, api.internal.getFlagRules, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.updateRule, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const oldRule = await models.rule.findOne({ where: { id: reqdata.rule.id } })
@@ -65,7 +65,7 @@ tapiduck.route(app, api.internal.updateRule, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.deleteRule, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const rule = await models.rule.findOne({ where: { id: reqdata.rule_id } })

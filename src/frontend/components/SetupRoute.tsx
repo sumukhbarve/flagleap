@@ -18,7 +18,7 @@ export const SetupRoute: React.VFC = function () {
     const resp = await tapiduck.fetch(api.internal.setup, {
       fname, lname, email, password: pw
     })
-    if (resp.status !== 'success'){
+    if (resp.status !== 'success') {
       return window.alert(resp.status === 'fail' ? resp.data : 'Unknown error')
     }
     const { inapiToken, member } = resp.data

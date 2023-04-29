@@ -20,7 +20,7 @@ const flagEditorRouteLoader = async function (flagId: string): Promise<void> {
     if (resp.status !== 'success') {
       return window.alert(tapiduck.failMsg(resp, data => data))
     }
-    const flags = resp.data;
+    const flags = resp.data
     store.flagMap.updateObjects(flags)
   }
   const currentFlag = store.flagMap.get()[flagId] ?? null

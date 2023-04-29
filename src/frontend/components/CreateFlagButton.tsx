@@ -19,7 +19,7 @@ export const CreateFlagButton: React.VFC = function () {
     if (resp.status !== 'success') {
       return window.alert(tapiduck.failMsg(resp, data => data))
     }
-    const flag = resp.data;
+    const flag = resp.data
     store.flagMap.updateObjects([flag])
     setShow(false)
     roqsduck.setRouteInfo({ id: 'flagEditor', flagId: flag.id })

@@ -25,7 +25,7 @@ export const RuleEditorForm: React.VFC<RuleEditorFormProps> = function (props) {
     if (resp.status !== 'success') {
       return window.alert(tapiduck.failMsg(resp, data => data))
     }
-    const updatedRule = resp.data;
+    const updatedRule = resp.data
     store.ruleMap.updateObjects([updatedRule])
 
     close()

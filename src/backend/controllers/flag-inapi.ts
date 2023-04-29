@@ -10,7 +10,7 @@ import { emitFlagNotif } from './sock-util'
 
 tapiduck.route(app, api.internal.createFlag, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const flagId = reqdata.flag_id
@@ -33,7 +33,7 @@ tapiduck.route(app, api.internal.createFlag, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.getFlags, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const flags: ZFlag[] = await models.flag.findAll({})
@@ -42,7 +42,7 @@ tapiduck.route(app, api.internal.getFlags, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.updateFlag, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const oldFlag = await models.flag.findOne({ where: { id: reqdata.flag.id } })
@@ -67,7 +67,7 @@ tapiduck.route(app, api.internal.updateFlag, async function (reqdata, jsend) {
 
 tapiduck.route(app, api.internal.deleteFlag, async function (reqdata, jsend) {
   const me = await auth.getMe(reqdata.inapiToken)
-  if (!me) {
+  if (_.not(me)) {
     return jsend.fail(auth.generalFailText)
   }
   const flag = await models.flag.findOne({ where: { id: reqdata.flag_id } })
