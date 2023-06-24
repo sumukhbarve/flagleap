@@ -20,6 +20,8 @@ export const config = {
   // Env:
   IS_PROD: getenv('NODE_ENV', 'development') === 'production',
   PORT: Number(getenv('PORT', '3333', false)),
+  // To use postgres (vs default sqlite), set DATABASE_URL. For eg., locally:
+  // export DATABASE_URL=postgres://localhost:5432/postgres
   DATABASE_URL: getenv('DATABASE_URL', `sqlite:${repoRel('local-sqlite.db')}`),
   SECRET_KEY: getenv('SECRET_KEY', 'not-really-a-secret--just-the-fallback'),
   EXTRA_LATENCY: Number(getenv('EXTRA_LATENCY', '0', false))
