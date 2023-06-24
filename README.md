@@ -78,9 +78,11 @@ type FlagMap = Record<string, Flag>
 ```
 
 **`.enabled` vs `.value`**
-- If a flag is disabled, the `.value` will always be `''` (empty string).
-- If a flag is enabled, the value will be the result value of the first rule that is satisfied.
-- If a flag has no rules, the `.value` will be `''` (empty string).
+- `.enabled` is a boolean, indicating whether the flag is turned on.
+- `.value` is the string obtained by evaluating the rules of the flag.
+    - If a flag is disabled, the `.value` will always be `''` (empty string).
+    - If a flag is enabled, the `.value` will be the result value of the first satisfied rule.
+    - If a flag has no rules, or if no rule is satisfied, the `.value` will be `''` (empty string).
 
 
 ## Rest API
